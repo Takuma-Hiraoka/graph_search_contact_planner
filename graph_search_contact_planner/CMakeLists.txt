@@ -6,17 +6,22 @@ set(CMAKE_BUILD_TYPE Release)
 
 find_package(catkin REQUIRED COMPONENTS
   graph_search
+  prioritized_inverse_kinematics_solver2
+  global_inverse_kinematics_solver
   )
+
+find_package(choreonoid REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS graph_search
+  CATKIN_DEPENDS graph_search prioritized_inverse_kinematics_solver2 global_inverse_kinematics_solver
 )
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${CHOREONOID_INCLUDE_DIRS}
   )
 
 add_library(${PROJECT_NAME} SHARED
@@ -25,6 +30,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}  PUBLIC
   ${catkin_LIBRARIES}
+  ${CHOREONOID_BODY_LIBRARIES}
   )
 
 install(TARGETS ${PROJECT_NAME}
