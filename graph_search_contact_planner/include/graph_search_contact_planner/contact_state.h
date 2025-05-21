@@ -11,7 +11,15 @@ namespace graph_search_contact_planner{
     cnoid::Isometry3 localPose;
   };
   class Contact {
+    friend bool operator==(const Contact& a, const Contact& b) { // localPose違いも同じ接触とみなす. 別の接触とみなしてほしい場合はnameを別にすること.
+      return (a.c1.name == b.c1.name) ||
+	(a.c1.name == b.c2.name) ||
+	(a.c2.name == b.c1.name) ||
+	(a.c2.name == b.c2.name);
+    }
   public:
+    Contact() {}
+    Contact(ContactCandidate c1_, ContactCandidate c2_) : c1(c1_), c2(c2_) {}
     ContactCandidate c1;
     ContactCandidate c2;
   };

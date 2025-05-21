@@ -13,5 +13,6 @@
   <depend>choreonoid</depend>
   <depend>prioritized_inverse_kinematics_solver2</depend>
   <depend>global_inverse_kinematics_solver</depend>
+  <depend>ik_constraint2_scfr</depend>
 
 </package>

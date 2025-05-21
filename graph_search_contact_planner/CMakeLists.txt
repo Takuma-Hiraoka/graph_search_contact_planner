@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   graph_search
   prioritized_inverse_kinematics_solver2
   global_inverse_kinematics_solver
+  ik_constraint2_scfr
   )
 
 find_package(choreonoid REQUIRED)
@@ -15,7 +16,7 @@ find_package(choreonoid REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS graph_search prioritized_inverse_kinematics_solver2 global_inverse_kinematics_solver
+  CATKIN_DEPENDS graph_search prioritized_inverse_kinematics_solver2 global_inverse_kinematics_solver ik_constraint2_scfr
 )
 
 include_directories(
@@ -26,6 +27,7 @@ include_directories(
 
 add_library(${PROJECT_NAME} SHARED
   src/graph_search_contact_planner.cpp
+  src/util.cpp
   )
 
 target_link_libraries(${PROJECT_NAME}  PUBLIC
