@@ -31,6 +31,7 @@ namespace graph_search_contact_planner{
       std::vector<std::shared_ptr<ContactCandidate> > contactStaticCandidates; // staticCondidate同士の接触は起こりえない
       prioritized_inverse_kinematics_solver2::IKParam pikParam;
       global_inverse_kinematics_solver::GIKParam gikParam;
+      std::shared_ptr<choreonoid_viewer::Viewer> viewer = nullptr;
     };
     ContactPlanner() {
       Eigen::SparseMatrix<double,Eigen::RowMajor> C_(11,6);
@@ -52,8 +53,8 @@ namespace graph_search_contact_planner{
       this->dl = dl_;
       this->du = du_;
     }
-  private:
     GSCPParam param;
+  private:
     Eigen::SparseMatrix<double,Eigen::RowMajor> C;
     cnoid::VectorX dl;
     cnoid::VectorX du;
