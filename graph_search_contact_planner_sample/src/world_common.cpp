@@ -3,7 +3,8 @@
 
 namespace graph_search_contact_planner_sample{
   void generateStepWorld(cnoid::BodyPtr& obstacle,
-			 std::shared_ptr<moveit_extensions::InterpolatedPropagationDistanceField> field) {
+			 std::shared_ptr<moveit_extensions::InterpolatedPropagationDistanceField> field,
+			 graph_search_contact_planner::ContactPlanner::GSCPParam& param) {
     cnoid::MeshGenerator meshGenerator;
     obstacle = new cnoid::Body();
     {
@@ -52,6 +53,30 @@ namespace graph_search_contact_planner_sample{
       }
     }
     field->addPointsToField(vertices);
+
+    // contactStaticCandidates
+    {
+      for(int i=0; i<5; i++) {
+	for(int j=0; j<5; j++) {
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("world");
+	  cc1->localPose.translation() = cnoid::Vector3(0.2+0.2*i, 0.1+0.2*j, 0.0);
+	  cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
+	  param.contactStaticCandidates.push_back(cc1);
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("world");
+	  cc2->localPose.translation() = cnoid::Vector3(-0.2*i, 0.1+0.2*j, 0.0);
+	  cc2->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
+	  param.contactStaticCandidates.push_back(cc2);
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("world");
+	  cc3->localPose.translation() = cnoid::Vector3(0.2+0.2*i, -0.1-0.2*j, 0.0);
+	  cc3->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
+	  param.contactStaticCandidates.push_back(cc3);
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("world");
+	  cc4->localPose.translation() = cnoid::Vector3(-0.2*i, -0.1-0.2*j, 0.0);
+	  cc4->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
+	  param.contactStaticCandidates.push_back(cc4);
+	}
+      }
+    }
   }
 
 }

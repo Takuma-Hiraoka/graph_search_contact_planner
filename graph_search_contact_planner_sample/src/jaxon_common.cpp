@@ -42,5 +42,84 @@ namespace graph_search_contact_planner_sample{
         param.variables.push_back(robot->joint(i));
       }
     }
+
+    // task: nominal constairnt
+    {
+      for(int i=0;i<robot->numJoints();i++){
+        std::shared_ptr<ik_constraint2::JointAngleConstraint> constraint = std::make_shared<ik_constraint2::JointAngleConstraint>();
+        constraint->joint() = robot->joint(i);
+        constraint->targetq() = reset_manip_pose[i];
+        constraint->precision() = 1e10; // always satisfied
+        param.nominals.push_back(constraint);
+      }
+    }
+
+    {
+      param.currentContactState = std::make_shared<graph_search_contact_planner::ContactState>();
+      global_inverse_kinematics_solver::link2Frame(param.variables, param.currentContactState->frame);
+      // rleg
+      {
+	graph_search_contact_planner::ContactCandidate c1;
+	c1.name = "RLEG_JOINT5";
+	c1.isStatic = false;
+	c1.localPose.translation() = cnoid::Vector3(0, 0, -0.1);
+	graph_search_contact_planner::ContactCandidate c2;
+	c2.name = "world";
+	c2.isStatic = true;
+	c2.localPose = robot->joint(c1.name)->T() * c1.localPose;
+	c2.localPose.linear() = c2.localPose.linear().transpose();
+	param.currentContactState->contacts.push_back(graph_search_contact_planner::Contact(c1,c2));
+      }
+      // lleg
+      {
+	graph_search_contact_planner::ContactCandidate c1;
+	c1.name = "LLEG_JOINT5";
+	c1.isStatic = false;
+	c1.localPose.translation() = cnoid::Vector3(0, 0, -0.1);
+	graph_search_contact_planner::ContactCandidate c2;
+	c2.name = "world";
+	c2.isStatic = true;
+	c2.localPose = robot->joint(c1.name)->T() * c1.localPose;
+	c2.localPose.linear() = c2.localPose.linear().transpose();
+	param.currentContactState->contacts.push_back(graph_search_contact_planner::Contact(c1,c2));
+      }
+    }
+
+    // contactDynamicCandidates
+    {
+      // rleg
+      {
+	std::shared_ptr<graph_search_contact_planner::ContactCandidate> rleg = std::make_shared<graph_search_contact_planner::ContactCandidate>();
+	rleg->name = "RLEG_JOINT5";
+	rleg->isStatic = false;
+	rleg->localPose.translation() = cnoid::Vector3(0,0,-0.11);
+	param.contactDynamicCandidates.push_back(rleg);
+      }
+      // lleg
+      {
+	std::shared_ptr<graph_search_contact_planner::ContactCandidate> lleg = std::make_shared<graph_search_contact_planner::ContactCandidate>();
+	lleg->name = "LLEG_JOINT5";
+	lleg->isStatic = false;
+	lleg->localPose.translation() = cnoid::Vector3(0,0,-0.11);
+	param.contactDynamicCandidates.push_back(lleg);
+      }
+      // rarm
+      {
+	std::shared_ptr<graph_search_contact_planner::ContactCandidate> rarm = std::make_shared<graph_search_contact_planner::ContactCandidate>();
+        rarm->name = "RARM_JOINT7";
+	rarm->isStatic = false;
+        rarm->localPose.translation() = cnoid::Vector3(0,0,-0.22);
+	param.contactDynamicCandidates.push_back(rarm);
+      }
+      // larm
+      {
+	std::shared_ptr<graph_search_contact_planner::ContactCandidate> larm = std::make_shared<graph_search_contact_planner::ContactCandidate>();
+        larm->name = "LARM_JOINT7";
+	larm->isStatic = false;
+        larm->localPose.translation() = cnoid::Vector3(0,0,-0.22);
+	param.contactDynamicCandidates.push_back(larm);
+      }
+    }
+
   }
 }

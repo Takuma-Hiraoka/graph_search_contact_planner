@@ -140,5 +140,36 @@ namespace graph_search_contact_planner{
     return solved;
 
   }
+  std::vector<cnoid::SgNodePtr> generateCandidateMakers(std::vector<cnoid::BodyPtr> robots, std::vector<std::shared_ptr<ContactCandidate> > ccs) {
+    std::vector<cnoid::SgNodePtr> drawOnObjects;
+    for(int i=0;i<ccs.size();i++) {
+      cnoid::SgLineSetPtr lines = new cnoid::SgLineSet;
+      lines->setLineWidth(5.0);
+      lines->getOrCreateColors()->resize(3);
+      lines->getOrCreateColors()->at(0) = cnoid::Vector3f(1.0,0.0,0.0);
+      lines->getOrCreateColors()->at(1) = cnoid::Vector3f(0.0,1.0,0.0);
+      lines->getOrCreateColors()->at(2) = cnoid::Vector3f(0.0,0.0,1.0);
+      lines->getOrCreateVertices()->resize(4);
+      lines->colorIndices().resize(0);
+      lines->addLine(0,1); lines->colorIndices().push_back(0); lines->colorIndices().push_back(0);
+      lines->addLine(0,2); lines->colorIndices().push_back(1); lines->colorIndices().push_back(1);
+      lines->addLine(0,3); lines->colorIndices().push_back(2); lines->colorIndices().push_back(2);
+      cnoid::Isometry3 pose;
+      if(ccs[i]->isStatic) pose = ccs[i]->localPose;
+      else {
+	for (int j=0;j<robots.size();j++) {
+	  if(robots[j]->joint(ccs[i]->name)) {
+	    pose = robots[j]->joint(ccs[i]->name)->T() * ccs[i]->localPose;
+	  }
+	}
+      }
+      lines->getOrCreateVertices()->at(0) = pose.translation().cast<cnoid::Vector3f::Scalar>();
+      lines->getOrCreateVertices()->at(1) = (pose * (0.05 * cnoid::Vector3::UnitX())).cast<cnoid::Vector3f::Scalar>();
+      lines->getOrCreateVertices()->at(2) = (pose * (0.05 * cnoid::Vector3::UnitY())).cast<cnoid::Vector3f::Scalar>();
+      lines->getOrCreateVertices()->at(3) = (pose * (0.05 * cnoid::Vector3::UnitZ())).cast<cnoid::Vector3f::Scalar>();
+      drawOnObjects.push_back(lines);
+    }
+    return drawOnObjects;
+  }
 
 }

@@ -6,9 +6,11 @@
 namespace graph_search_contact_planner{
   class ContactCandidate {
   public:
+    ContactCandidate() {}
+    ContactCandidate(std::string name_, cnoid::Isometry3 localPose_=cnoid::Isometry3::Identity(), bool isStatic_=true) : name(name_), localPose(localPose_), isStatic(isStatic_) {}
     std::string name;
+    cnoid::Isometry3 localPose = cnoid::Isometry3::Identity();
     bool isStatic=true;
-    cnoid::Isometry3 localPose;
   };
   class Contact {
     friend bool operator==(const Contact& a, const Contact& b) { // localPose違いも同じ接触とみなす. 別の接触とみなしてほしい場合はnameを別にすること.
