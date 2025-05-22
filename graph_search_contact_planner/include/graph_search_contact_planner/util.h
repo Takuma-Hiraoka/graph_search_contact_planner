@@ -17,4 +17,20 @@ namespace graph_search_contact_planner{
   std::vector<cnoid::SgNodePtr> generateCandidateMakers(std::vector<cnoid::BodyPtr> robots, std::vector<std::shared_ptr<ContactCandidate> > ccs);
 }
 
+inline std::ostream &operator<<(std::ostream &os, const graph_search_contact_planner::ContactState& state) {
+  for (int i=0; i<state.contacts.size(); i++) {
+    os << "contact " << i << std::endl;
+    os << "c1 name : " << state.contacts[i].c1.name << std::endl;
+    os << "pos : " << (state.contacts[i].c1.localPose.translation()).format(Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ", ", "", "", " [", "]")) << std::endl;
+    os << "rot : " << (state.contacts[i].c1.localPose.linear()).format(Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ", ", "", "", " [", "]")) << std::endl;
+    os << "isStatic : " << state.contacts[i].c1.isStatic << std::endl;
+    os << "c2 name : " << state.contacts[i].c2.name << std::endl;
+    os << "pos : " << (state.contacts[i].c2.localPose.translation()).format(Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ", ", "", "", " [", "]")) << std::endl;
+    os << "rot : " << (state.contacts[i].c2.localPose.linear()).format(Eigen::IOFormat(Eigen::StreamPrecision, 0, ", ", ", ", "", "", " [", "]")) << std::endl;
+    os << "isStatic : " << state.contacts[i].c2.isStatic << std::endl;
+    }
+  os << std::endl;
+  return os;
+}
+
 #endif

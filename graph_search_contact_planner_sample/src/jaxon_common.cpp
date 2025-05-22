@@ -64,10 +64,10 @@ namespace graph_search_contact_planner_sample{
 	c1.isStatic = false;
 	c1.localPose.translation() = cnoid::Vector3(0, 0, -0.1);
 	graph_search_contact_planner::ContactCandidate c2;
-	c2.name = "world";
+	c2.name = "floor2";
 	c2.isStatic = true;
 	c2.localPose = robot->joint(c1.name)->T() * c1.localPose;
-	c2.localPose.linear() = c2.localPose.linear().transpose();
+	c2.localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	param.currentContactState->contacts.push_back(graph_search_contact_planner::Contact(c1,c2));
       }
       // lleg
@@ -77,10 +77,10 @@ namespace graph_search_contact_planner_sample{
 	c1.isStatic = false;
 	c1.localPose.translation() = cnoid::Vector3(0, 0, -0.1);
 	graph_search_contact_planner::ContactCandidate c2;
-	c2.name = "world";
+	c2.name = "floor2";
 	c2.isStatic = true;
 	c2.localPose = robot->joint(c1.name)->T() * c1.localPose;
-	c2.localPose.linear() = c2.localPose.linear().transpose();
+	c2.localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	param.currentContactState->contacts.push_back(graph_search_contact_planner::Contact(c1,c2));
       }
     }

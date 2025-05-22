@@ -19,6 +19,8 @@ namespace graph_search_contact_planner{
 			const IKState ikState,
 			const std::shared_ptr<std::vector<std::vector<double> > > path = nullptr
 			);
+    bool solve();
+    void goalPath(std::vector<ContactState>& path);
     class GSCPParam {
     public:
       std::vector<cnoid::BodyPtr> robots;
@@ -32,6 +34,30 @@ namespace graph_search_contact_planner{
       prioritized_inverse_kinematics_solver2::IKParam pikParam;
       global_inverse_kinematics_solver::GIKParam gikParam;
       std::shared_ptr<choreonoid_viewer::Viewer> viewer = nullptr;
+
+      GSCPParam() {
+	gikParam.maxTranslation = 0.5;
+	gikParam.pikParam.maxIteration = 100; // max iterationに達するか、convergeしたら終了する. isSatisfiedでは終了しない. ゼロ空間でreference angleに可能な限り近づけるタスクがあるので. 1 iterationで0.5msくらいかかるので、stateを1つ作るための時間の上限が見積もれる. 一見、この値を小さくすると早くなりそうだが、goalSampling時に本当はgoalに到達できるのにその前に返ってしまうことで遅くなることがあるため、少ないiterationでも収束するように他のパラメータを調整したほうがいい
+	gikParam.pikParam.checkFinalState = true;
+	gikParam.pikParam.calcVelocity = false;
+	gikParam.delta = 0.01; // この距離内のstateは、中間のconstraintチェック無しで遷移可能. stateごとの距離がこの距離以内だとそもそも同じstateとみなされてあたらしくstateを作らない. 足を浮かせるとき等はstateが大きく変化しないので、deltaも小さくしておかないとstateが増えない.
+	gikParam.projectCellSize = 0.02;
+	gikParam.threads = 1;
+	gikParam.timeout = 0.5;
+	gikParam.goalBias = 0.2;
+	gikParam.pikParam.we = 1e1; // 逆運動学が振動しないこと優先. 1e0だと不安定. 1e3だと大きすぎる
+	gikParam.pikParam.wmax = 1e0; // 1e2程度にすると関節がめり込まなくなるが、ほとんど動かない.
+	gikParam.pikParam.convergeThre = 5e-3;
+
+	pikParam.checkFinalState=true;
+	pikParam.calcVelocity = false;
+	pikParam.debugLevel = 0;
+	pikParam.we = 1e2;
+	pikParam.wmax = 1e1;
+	pikParam.convergeThre = 5e-3;
+	pikParam.maxIteration = 100;
+      }
+
     };
     ContactPlanner() {
       Eigen::SparseMatrix<double,Eigen::RowMajor> C_(11,6);

@@ -19,7 +19,6 @@ namespace graph_search_contact_planner{
       scfrConstraint->A_robot() = this->param.robots[i];
       scfrConstraints.push_back(scfrConstraint);
     }
-
     std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints1;
     std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints2;
     {
@@ -47,7 +46,7 @@ namespace graph_search_contact_planner{
 	  if (!constraint->B_link()) std::cerr << "[GraphSearchContactPlanner] error!! param.robots do not have preState.contacts[i].c2.name" << std::endl;
 	}
         constraint->B_localpos() = preState.contacts[i].c2.localPose;
-	constraint->B_localpos().linear() = constraint->B_localpos().linear().transpose(); // scfrを作る関係上localposのZはrobotの内側を向いている. PositionConstraintで一致させるために回転だけ逆にする.
+	constraint->B_localpos().linear() = constraint->B_localpos().linear() * cnoid::rotFromRpy(0.0, M_PI, M_PI/2).transpose(); // scfrを作る関係上localposのZはrobotの内側を向いている. PositionConstraintで一致させるためにZの向きを揃える.
         constraint->eval_link() = constraint->B_link();
 	constraint->eval_localR() = constraint->B_localpos().linear();
         constraint->weight() << 1.0, 1.0, 1.0, 1.0, 1.0, 1.0;
@@ -56,6 +55,15 @@ namespace graph_search_contact_planner{
 	  if (scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name)) {
 	    scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name));
 	    scfrConstraints[j]->poses().push_back(preState.contacts[i].c1.localPose);
+	    scfrConstraints[j]->As().emplace_back(0,6);
+	    scfrConstraints[j]->bs().emplace_back(0);
+	    scfrConstraints[j]->Cs().push_back(this->C);
+	    scfrConstraints[j]->dls().push_back(this->dl);
+	    scfrConstraints[j]->dus().push_back(this->du);
+	  }
+	  if (scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name)) {
+	    scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name));
+	    scfrConstraints[j]->poses().push_back(preState.contacts[i].c2.localPose);
 	    scfrConstraints[j]->As().emplace_back(0,6);
 	    scfrConstraints[j]->bs().emplace_back(0);
 	    scfrConstraints[j]->Cs().push_back(this->C);
@@ -89,10 +97,13 @@ namespace graph_search_contact_planner{
       if (!moveContactConstraint->B_link()) std::cerr << "[GraphSearchContactPlanner] error!! param.robots do not have postState.contacts[i].c2.name" << std::endl;
     }
     moveContactConstraint->B_localpos() = moveContact.c2.localPose;
-    moveContactConstraint->B_localpos().linear() = moveContactConstraint->B_localpos().linear().transpose(); // scfrを作る関係上localposのZはrobotの内側を向いている. PositionConstraintで一致させるために回転だけ逆にする.
+    moveContactConstraint->B_localpos().linear() = moveContactConstraint->B_localpos().linear() * cnoid::rotFromRpy(0.0, M_PI, M_PI/2).transpose(); // scfrを作る関係上localposのZはrobotの内側を向いている. PositionConstraintで一致させるために回転だけ逆にする.
 
     if ((ikState==IKState::DETACH_FIXED) ||
-	(ikState==IKState::ATTACH_PRE)) moveContactConstraint->B_localpos().translation() += moveContactConstraint->B_link()->R() * moveContactConstraint->B_localpos().linear() * cnoid::Vector3(0,0,0.02);
+	(ikState==IKState::ATTACH_PRE)) {
+      if (moveContactConstraint->B_link()) moveContactConstraint->B_localpos().translation() += moveContactConstraint->B_link()->R() * moveContactConstraint->B_localpos().linear() * cnoid::Vector3(0,0,0.02);
+      else moveContactConstraint->B_localpos().translation() += moveContactConstraint->B_localpos().linear() * cnoid::Vector3(0,0,0.02);
+    }
     moveContactConstraint->eval_link() = moveContactConstraint->B_link();
     moveContactConstraint->eval_localR() = moveContactConstraint->B_localpos().linear();
     moveContactConstraint->weight() << 1.0, 1.0, 1.0, 1.0, 1.0, 0.0;
@@ -135,7 +146,7 @@ namespace graph_search_contact_planner{
     cnoid::Matrix3d A_rot;
     if (moveContactConstraint->A_link()) A_rot = moveContactConstraint->A_link()->R() * moveContactConstraint->A_localpos().linear();
     else A_rot = moveContactConstraint->A_localpos().linear();
-    moveContact.c2.localPose.linear() = (B_rot.transpose() * A_rot).transpose();//((moveContactConstraint->B_link() ? moveContactConstraint->B_link()->R() : cnoid::Isometry3::Identity().linear()) * (moveContactConstraint->A_link() ? moveContactConstraint->A_link()->R() * moveContactConstraint->A_localpos().linear() : moveContactConstraint->A_localpos().linear())).transpose();
+    moveContact.c2.localPose.linear() = (B_rot.transpose() * A_rot) * cnoid::rotFromRpy(0.0, M_PI, M_PI/2);//((moveContactConstraint->B_link() ? moveContactConstraint->B_link()->R() : cnoid::Isometry3::Identity().linear()) * (moveContactConstraint->A_link() ? moveContactConstraint->A_link()->R() * moveContactConstraint->A_localpos().linear() : moveContactConstraint->A_localpos().linear())).transpose();
 
     return solved;
 
