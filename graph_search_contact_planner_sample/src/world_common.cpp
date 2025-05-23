@@ -15,6 +15,7 @@ namespace graph_search_contact_planner_sample{
           shape->setMesh(meshGenerator.generateBox(cnoid::Vector3(4,2,0.1)));
           cnoid::SgMaterialPtr material = new cnoid::SgMaterial();
           material->setTransparency(0);
+          material->setDiffuseColor(cnoid::Vector3f(0.6, 0.6, 0.6));
           shape->setMaterial(material);
           cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
           posTransform->translation() = cnoid::Vector3(0,0,-0.05);
@@ -26,6 +27,7 @@ namespace graph_search_contact_planner_sample{
           shape->setMesh(meshGenerator.generateBox(cnoid::Vector3(1,1,0.1)));
           cnoid::SgMaterialPtr material = new cnoid::SgMaterial();
           material->setTransparency(0);
+          material->setDiffuseColor(cnoid::Vector3f(0.6, 0.6, 0.6));
           shape->setMaterial(material);
           cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
           posTransform->translation() = cnoid::Vector3(1.5,0,0.2+0.05);

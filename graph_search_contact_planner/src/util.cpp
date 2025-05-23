@@ -146,7 +146,7 @@ namespace graph_search_contact_planner{
     cnoid::Matrix3d A_rot;
     if (moveContactConstraint->A_link()) A_rot = moveContactConstraint->A_link()->R() * moveContactConstraint->A_localpos().linear();
     else A_rot = moveContactConstraint->A_localpos().linear();
-    moveContact.c2.localPose.linear() = (B_rot.transpose() * A_rot) * cnoid::rotFromRpy(0.0, M_PI, M_PI/2);//((moveContactConstraint->B_link() ? moveContactConstraint->B_link()->R() : cnoid::Isometry3::Identity().linear()) * (moveContactConstraint->A_link() ? moveContactConstraint->A_link()->R() * moveContactConstraint->A_localpos().linear() : moveContactConstraint->A_localpos().linear())).transpose();
+    moveContact.c2.localPose.linear() = (B_rot.transpose() * A_rot) * cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 
     return solved;
 

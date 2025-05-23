@@ -90,6 +90,16 @@ namespace graph_search_contact_planner{
       }
     }
 
+    // 再訪しない
+    for (int i=0;i<this->graph().size();i++) {
+      for(int j=0;j<adjacentNodeCandidates.size();j++) {
+	if (std::static_pointer_cast<ContactNode>(this->graph()[i])->state() == adjacentNodeCandidates[j]->state()) {
+	  adjacentNodeCandidates.erase(adjacentNodeCandidates.begin()+j);
+	  break;
+	}
+      }
+    }
+
     std::vector<std::shared_ptr<graph_search::Node> > adjacentNodes;
     for (int i=0; i<adjacentNodeCandidates.size(); i++) {
       if(checkTransition(extend_state, adjacentNodeCandidates[i]->state())) adjacentNodes.push_back(adjacentNodeCandidates[i]);
