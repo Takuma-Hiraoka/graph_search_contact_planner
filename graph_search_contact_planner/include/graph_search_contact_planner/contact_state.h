@@ -34,6 +34,7 @@ namespace graph_search_contact_planner{
       return true;
     }
   public:
+    std::vector<std::vector<double> > transition;
     std::vector<double> frame;
     std::vector<Contact> contacts;
   };

@@ -4,6 +4,7 @@
 namespace graph_search_contact_planner{
   bool ContactPlanner::solveContactIK(const ContactState& preState,
                       Contact& moveContact,
+		      ContactState& postState,
                       const IKState ikState,
                       const std::shared_ptr<std::vector<std::vector<double> > > path
                       ) {
@@ -139,6 +140,8 @@ namespace graph_search_contact_planner{
                                                           param.gikParam,
                                                           tmpPath);
     }
+
+    postState.transition.insert(postState.transition.begin(), (*tmpPath).begin(), (*tmpPath).end());
 
     moveContact.c1.localPose.linear() = moveContactConstraint->A_localpos().linear();
     cnoid::Matrix3d B_rot = cnoid::Matrix3d::Identity();

@@ -41,9 +41,17 @@ namespace graph_search_contact_planner_sample{
       std::cerr << "path size : " << path.size() << std::endl;
       while(true) {
 	for(int i=0;i<path.size();i++){
+	  for (int j=0;j<path[i].transition.size();j++) {
+	    global_inverse_kinematics_solver::frame2Link(path[i].transition[j], planner.param.variables);
+	    for(int k=0; k<planner.param.robots.size(); k++) {
+	      planner.param.robots[k]->calcForwardKinematics(false);
+	    }
+	    viewer->drawObjects();
+	    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / path[i].transition.size()));
+	  }
 	  global_inverse_kinematics_solver::frame2Link(path[i].frame, planner.param.variables);
-	  for(int j=0; j<planner.param.robots.size(); j++) {
-	    planner.param.robots[j]->calcForwardKinematics(false);
+	  for(int k=0; k<planner.param.robots.size(); k++) {
+	    planner.param.robots[k]->calcForwardKinematics(false);
 	  }
 	  viewer->drawObjects();
 	  std::this_thread::sleep_for(std::chrono::milliseconds(1000));

@@ -126,11 +126,12 @@ namespace graph_search_contact_planner{
       param.robots[i]->calcForwardKinematics(false);
       param.robots[i]->calcCenterOfMass();
     }
+    postState.transition.clear();
 
     if (postState.contacts.size() > preState.contacts.size()) {
       // attach
-      if (!solveContactIK(preState, postState.contacts.back(), IKState::ATTACH_PRE)) return false;
-      if (!solveContactIK(preState, postState.contacts.back(), IKState::ATTACH_FIXED)) return false;
+      if (!solveContactIK(preState, postState.contacts.back(), postState, IKState::ATTACH_PRE)) return false;
+      if (!solveContactIK(preState, postState.contacts.back(), postState, IKState::ATTACH_FIXED)) return false;
     } else if (postState.contacts.size() < preState.contacts.size()) {
       // detach
       bool find_detach_contact = false;
@@ -145,7 +146,7 @@ namespace graph_search_contact_planner{
 	std::cerr << "[GraphSearchContactPlanner] checkTransition failed!! cannot find detach contact" << std::endl;
 	return false;
       }
-      if (!solveContactIK(postState, moveContact, IKState::DETACH_FIXED)) return false;
+      if (!solveContactIK(postState, moveContact, postState, IKState::DETACH_FIXED)) return false;
     } else {
       std::cerr << "[GraphSearchContactPlanner] checkTransition failed!! postState.contacts.size() is same as preState.contacts.size()" << std::endl;
       return false;
