@@ -9,8 +9,8 @@ namespace graph_search_contact_planner_sample{
 		     ) {
     cnoid::BodyLoader bodyLoader;
     cnoid::BodyPtr robot = bodyLoader.load(ros::package::getPath("jvrc_models") + "/JAXON_JVRC/JAXON_JVRCmain.wrl");
-    param.robots.push_back(robot);
     if(!robot) std::cerr << "!robot" << std::endl;
+    param.bodies.push_back(robot);
     // reset manip pose
     robot->rootLink()->p() = cnoid::Vector3(0,0,1.0);
     robot->rootLink()->v().setZero();

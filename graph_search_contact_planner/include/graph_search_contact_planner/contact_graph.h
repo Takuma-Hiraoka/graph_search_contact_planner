@@ -13,7 +13,7 @@ namespace graph_search_contact_planner{
     bool isGoalSatisfied(std::shared_ptr<graph_search::Node> node) override; // nodeのcontactsがgoalContactStatesのcontactsを含んでいればtrue. nameのみで座標は無視.
     void calcHeuristic(std::shared_ptr<graph_search::Node> node) override;
     std::vector<std::shared_ptr<graph_search::Node> > gatherAdjacentNodes(std::shared_ptr<graph_search::Node> extend_node) override;
-    bool checkTransition(ContactState preState, ContactState& postState); // preStateからPostStateまでの遷移が可能ならtrue. trueのとき、postStateのframeやlocalPoseを書き換える.
+    bool checkTransition(const ContactState& preState, ContactState& postState); // preStateからPostStateまでの遷移が可能ならtrue. trueのとき、postStateのframeやlocalPoseを書き換える.
     bool solveContactIK(const ContactState& preState,
 			Contact& moveContact,
 			ContactState& postState,
@@ -24,9 +24,10 @@ namespace graph_search_contact_planner{
     void goalPath(std::vector<ContactState>& path);
     class GSCPParam {
     public:
-      std::vector<cnoid::BodyPtr> robots;
+      std::vector<cnoid::BodyPtr> bodies; // デストラクトされないように保持しておく
       std::vector<cnoid::LinkPtr> variables;
-      std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints;
+      std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > constraints;
+      std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > rejections;
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > nominals;
       std::shared_ptr<ContactState> currentContactState;
       std::shared_ptr<ContactState> goalContactState;
@@ -35,6 +36,7 @@ namespace graph_search_contact_planner{
       prioritized_inverse_kinematics_solver2::IKParam pikParam;
       global_inverse_kinematics_solver::GIKParam gikParam;
       std::shared_ptr<choreonoid_viewer::Viewer> viewer = nullptr;
+      unsigned int threads = 1;
 
       GSCPParam() {
 	gikParam.maxTranslation = 0.5;
@@ -85,6 +87,11 @@ namespace graph_search_contact_planner{
     Eigen::SparseMatrix<double,Eigen::RowMajor> C;
     cnoid::VectorX dl;
     cnoid::VectorX du;
+    std::vector<std::map<cnoid::BodyPtr, cnoid::BodyPtr> > modelMaps;
+    std::vector<std::vector<cnoid::LinkPtr> > variabless;
+    std::vector<std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > > constraintss;
+    std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > rejectionss;
+    std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > nominalss;
   };
 }
 
