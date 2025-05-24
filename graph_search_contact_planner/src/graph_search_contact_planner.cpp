@@ -158,10 +158,23 @@ namespace graph_search_contact_planner{
       std::shared_ptr<unsigned int> count = std::make_shared<unsigned int>(0);
       std::vector<std::thread *> th(numThreads);
       std::shared_ptr<std::mutex> threadLock = std::make_shared<std::mutex>();
+      std::shared_ptr<std::vector<bool> > transitions = std::make_shared<std::vector<bool> >(adjacentNodeCandidates.size(), false);
+      for (unsigned int i=0; i < numThreads; i++) {
+	th[i] = new std::thread([&count, &threadLock, &transitions, extend_state, &adjacentNodeCandidates, this, i]
+				{ return checkTransitionThread(count, threadLock, transitions, extend_state, adjacentNodeCandidates, this->variabless[i], this->constraintss[i], this->rejectionss[i], this->nominalss[i], this->param.pikParam, this->param.gikParam);
+				});
+      }
+      for (unsigned int i=0; i < numThreads; i++) {
+	th[i]->join();
+	delete th[i];
+      }
+      for (int i=0; i<adjacentNodeCandidates.size(); i++) {
+	if ((*transitions)[i]) adjacentNodes.push_back(adjacentNodeCandidates[i]);
+      }
 
     } else {
       for (int i=0; i<adjacentNodeCandidates.size(); i++) {
-	if(checkTransition(extend_state, adjacentNodeCandidates[i]->state())) adjacentNodes.push_back(adjacentNodeCandidates[i]);
+	if(checkTransition(extend_state, adjacentNodeCandidates[i]->state(), param.variables, param.constraints, param.rejections, param.nominals, param.pikParam, param.gikParam)) adjacentNodes.push_back(adjacentNodeCandidates[i]);
       }
     }
 
@@ -172,7 +185,46 @@ namespace graph_search_contact_planner{
     return adjacentNodes;
   }
 
-  bool ContactPlanner::checkTransition(const ContactState& preState, ContactState& postState) {
+  bool ContactPlanner::checkTransitionThread(std::shared_ptr<unsigned int> count,
+					     std::shared_ptr<std::mutex> mutex,
+					     std::shared_ptr<std::vector<bool> > transitions,
+					     ContactState preState,
+					     const std::vector<std::shared_ptr<ContactNode> >& adjacentNodeCandidates,
+					     const std::vector<cnoid::LinkPtr>& variables,
+					     const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+					     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+					     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+					     prioritized_inverse_kinematics_solver2::IKParam pikParam,
+					     global_inverse_kinematics_solver::GIKParam gikParam
+					     ) {
+    while (true) {
+      mutex->lock();
+      if ((*count) >= adjacentNodeCandidates.size()) {
+        mutex->unlock();
+        return true;
+      } else {
+	unsigned int count_ = *count;
+        (*count)++;
+        mutex->unlock();
+	std::shared_ptr<ContactNode> node = adjacentNodeCandidates[count_];
+	if(checkTransition(preState, node->state(), variables, constraints, rejections, nominals, pikParam, gikParam)) {
+	  mutex->lock();
+	  (*transitions)[count_] = true;
+	  mutex->unlock();
+	}
+      }
+    }
+  }
+
+  bool ContactPlanner::checkTransition(const ContactState& preState,
+				       ContactState& postState,
+				       const std::vector<cnoid::LinkPtr>& variables,
+				       const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+				       const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+				       const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+				       prioritized_inverse_kinematics_solver2::IKParam pikParam,
+				       global_inverse_kinematics_solver::GIKParam gikParam
+				       ) {
     if (this->debugLevel() >= 2) {
       std::cerr << "[GraphSearchContactPlanner] checkTransition" << std::endl;
       std::cerr << "preState" << std::endl;
@@ -181,13 +233,13 @@ namespace graph_search_contact_planner{
       std::cerr << postState << std::endl;
     }
 
-    global_inverse_kinematics_solver::frame2Link(preState.frame, param.variables);
+    global_inverse_kinematics_solver::frame2Link(preState.frame, variables);
     postState.transition.clear();
 
     if (postState.contacts.size() > preState.contacts.size()) {
       // attach
-      if (!solveContactIK(preState, postState.contacts.back(), postState, IKState::ATTACH_PRE)) return false;
-      if (!solveContactIK(preState, postState.contacts.back(), postState, IKState::ATTACH_FIXED)) return false;
+      if (!solveContactIK(preState, postState.contacts.back(), postState, IKState::ATTACH_PRE, variables, constraints, rejections, nominals, pikParam, gikParam)) return false;
+      if (!solveContactIK(preState, postState.contacts.back(), postState, IKState::ATTACH_FIXED, variables, constraints, rejections, nominals, pikParam, gikParam)) return false;
     } else if (postState.contacts.size() < preState.contacts.size()) {
       // detach
       bool find_detach_contact = false;
@@ -202,12 +254,12 @@ namespace graph_search_contact_planner{
 	std::cerr << "[GraphSearchContactPlanner] checkTransition failed!! cannot find detach contact" << std::endl;
 	return false;
       }
-      if (!solveContactIK(postState, moveContact, postState, IKState::DETACH_FIXED)) return false;
+      if (!solveContactIK(postState, moveContact, postState, IKState::DETACH_FIXED, variables, constraints, rejections, nominals, pikParam, gikParam)) return false;
     } else {
       std::cerr << "[GraphSearchContactPlanner] checkTransition failed!! postState.contacts.size() is same as preState.contacts.size()" << std::endl;
       return false;
     }
-    global_inverse_kinematics_solver::link2Frame(param.variables, postState.frame);
+    global_inverse_kinematics_solver::link2Frame(variables, postState.frame);
     return true;
   }
 

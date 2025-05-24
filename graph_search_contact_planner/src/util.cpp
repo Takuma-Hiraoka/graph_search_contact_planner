@@ -4,16 +4,17 @@
 
 namespace graph_search_contact_planner{
   bool ContactPlanner::solveContactIK(const ContactState& preState,
-                      Contact& moveContact,
-		      ContactState& postState,
-                      const IKState ikState,
-                      const std::shared_ptr<std::vector<std::vector<double> > > path
-                      ) {
+				      Contact& moveContact,
+				      ContactState& postState,
+				      const IKState& ikState,
+				      const std::vector<cnoid::LinkPtr>& variables,
+				      const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+				      const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+				      const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+				      prioritized_inverse_kinematics_solver2::IKParam pikParam,
+				      global_inverse_kinematics_solver::GIKParam gikParam
+				      ) {
     std::shared_ptr<std::vector<std::vector<double> > > tmpPath = std::make_shared<std::vector<std::vector<double> > >();
-    std::vector<cnoid::LinkPtr> variables;
-    for (int i=0;i<this->param.variables.size(); i++) {
-      variables.push_back(this->param.variables[i]);
-    }
     std::set<cnoid::BodyPtr> bodies;
     for(size_t i=0;i<variables.size();i++){
       if(variables[i]->body()) bodies.insert(variables[i]->body());
@@ -118,31 +119,32 @@ namespace graph_search_contact_planner{
     for (int i=0;i<scfrConstraints.size();i++) constraints0.push_back(scfrConstraints[i]);
 
     bool solved = false;
-    std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > constraints{constraints0, constraints1, constraints2, param.nominals};
+    std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > constraint{constraints0, constraints1, constraints2, nominals};
 
     std::vector<std::shared_ptr<prioritized_qp_base::Task> > prevTasks;
     solved  =  prioritized_inverse_kinematics_solver2::solveIKLoop(variables,
-                                                                   constraints,
+                                                                   constraint,
+								   rejections,
                                                                    prevTasks,
-                                                                   param.pikParam,
+                                                                   pikParam,
                                                                    tmpPath
                                                                    );
     if(!solved) {
       std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > gikConstraints{constraints0, constraints1};
-      param.gikParam.projectLink.resize(1);
-      param.gikParam.projectLink[0] = moveContactConstraint->A_link() ? moveContactConstraint->A_link() : moveContactConstraint->B_link();
-      param.gikParam.projectLocalPose = moveContactConstraint->A_link() ? moveContactConstraint->A_localpos() : moveContactConstraint->B_localpos();
+      gikParam.projectLink.resize(1);
+      gikParam.projectLink[0] = moveContactConstraint->A_link() ? moveContactConstraint->A_link() : moveContactConstraint->B_link();
+      gikParam.projectLocalPose = moveContactConstraint->A_link() ? moveContactConstraint->A_localpos() : moveContactConstraint->B_localpos();
       // 関節角度上下限を厳密に満たしていないと、omplのstart stateがエラーになるので
-      for(int i=0;i<param.variables.size();i++){
-        if(param.variables[i]->isRevoluteJoint() || param.variables[i]->isPrismaticJoint()) {
-          param.variables[i]->q() = std::max(std::min(param.variables[i]->q(),param.variables[i]->q_upper()),param.variables[i]->q_lower());
+      for(int i=0;i<variables.size();i++){
+        if(variables[i]->isRevoluteJoint() || variables[i]->isPrismaticJoint()) {
+          variables[i]->q() = std::max(std::min(variables[i]->q(),variables[i]->q_upper()),variables[i]->q_lower());
         }
       }
       solved = global_inverse_kinematics_solver::solveGIK(variables,
                                                           gikConstraints,
                                                           constraints2,
-                                                          param.nominals,
-                                                          param.gikParam,
+                                                          nominals,
+                                                          gikParam,
                                                           tmpPath);
     }
 

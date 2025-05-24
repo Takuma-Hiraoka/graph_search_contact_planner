@@ -23,7 +23,8 @@ namespace graph_search_contact_planner_sample{
     goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
     goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
     planner.param.goalContactState = goalContactState;
-    planner.debugLevel() = 1;
+    planner.debugLevel() = 0;
+    planner.param.threads = 10;
 
     viewer->objects(obstacle);
 

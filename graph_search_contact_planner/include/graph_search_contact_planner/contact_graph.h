@@ -4,6 +4,7 @@
 #include <graph_search/graph.h>
 #include <graph_search_contact_planner/util.h>
 #include <graph_search_contact_planner/contact_state.h>
+#include <graph_search_contact_planner/contact_node.h>
 #include <global_inverse_kinematics_solver/global_inverse_kinematics_solver.h>
 #include <prioritized_inverse_kinematics_solver2/prioritized_inverse_kinematics_solver2.h>
 
@@ -13,13 +14,38 @@ namespace graph_search_contact_planner{
     bool isGoalSatisfied(std::shared_ptr<graph_search::Node> node) override; // nodeのcontactsがgoalContactStatesのcontactsを含んでいればtrue. nameのみで座標は無視.
     void calcHeuristic(std::shared_ptr<graph_search::Node> node) override;
     std::vector<std::shared_ptr<graph_search::Node> > gatherAdjacentNodes(std::shared_ptr<graph_search::Node> extend_node) override;
-    bool checkTransition(const ContactState& preState, ContactState& postState); // preStateからPostStateまでの遷移が可能ならtrue. trueのとき、postStateのframeやlocalPoseを書き換える.
+    bool checkTransitionThread(std::shared_ptr<unsigned int> count,
+			       std::shared_ptr<std::mutex> mutex,
+			       std::shared_ptr<std::vector<bool> > transitions,
+			       ContactState preState,
+			       const std::vector<std::shared_ptr<ContactNode> >& adjacentNodeCandidates,
+			       const std::vector<cnoid::LinkPtr>& variables,
+			       const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+			       const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+			       const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+			       prioritized_inverse_kinematics_solver2::IKParam pikParam,
+			       global_inverse_kinematics_solver::GIKParam gikParam
+			       ); // preStateからPostStateまでの遷移が可能ならtrue. trueのとき、postStateのframeやlocalPoseを書き換える.
+    bool checkTransition(const ContactState& preState,
+			 ContactState& postState,
+			 const std::vector<cnoid::LinkPtr>& variables,
+			 const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+			 const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+			 const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+			 prioritized_inverse_kinematics_solver2::IKParam pikParam,
+			 global_inverse_kinematics_solver::GIKParam gikParam
+			 ); // preStateからPostStateまでの遷移が可能ならtrue. trueのとき、postStateのframeやlocalPoseを書き換える.
     bool solveContactIK(const ContactState& preState,
 			Contact& moveContact,
 			ContactState& postState,
-			const IKState ikState,
-			const std::shared_ptr<std::vector<std::vector<double> > > path = nullptr
-			);
+			const IKState& ikState,
+			const std::vector<cnoid::LinkPtr>& variables,
+			const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+			const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+			const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+			prioritized_inverse_kinematics_solver2::IKParam pikParam,
+			global_inverse_kinematics_solver::GIKParam gikParam
+		        );
     bool solve();
     void goalPath(std::vector<ContactState>& path);
     class GSCPParam {
