@@ -58,24 +58,39 @@ namespace graph_search_contact_planner{
 	constraint->eval_localR() = constraint->B_localpos().linear();
         constraint->weight() << 1.0, 1.0, 1.0, 1.0, 1.0, 1.0;
         constraints1.push_back(constraint);
+	Eigen::SparseMatrix<double,Eigen::RowMajor> C(11,6);
+	C.insert(0,2) = 1.0;
+	C.insert(1,0) = 1.0; C.insert(1,2) = 0.2;
+	C.insert(2,0) = -1.0; C.insert(2,2) = 0.2;
+	C.insert(3,1) = 1.0; C.insert(3,2) = 0.2;
+	C.insert(4,1) = -1.0; C.insert(4,2) = 0.2;
+	C.insert(5,2) = 0.05; C.insert(5,3) = 1.0;
+	C.insert(6,2) = 0.05; C.insert(6,3) = -1.0;
+	C.insert(7,2) = 0.05; C.insert(7,4) = 1.0;
+	C.insert(8,2) = 0.05; C.insert(8,4) = -1.0;
+	C.insert(9,2) = 0.005; C.insert(9,5) = 1.0;
+	C.insert(10,2) = 0.005; C.insert(10,5) = -1.0;
+	cnoid::VectorX dl = Eigen::VectorXd::Zero(11);
+	cnoid::VectorX du = 1e10 * Eigen::VectorXd::Ones(11);
+	du[0] = 20000.0;
 	for (int j=0;j<scfrConstraints.size();j++) {
 	  if (scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name)) {
 	    scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name));
 	    scfrConstraints[j]->poses().push_back(preState.contacts[i].c1.localPose);
 	    scfrConstraints[j]->As().emplace_back(0,6);
 	    scfrConstraints[j]->bs().emplace_back(0);
-	    scfrConstraints[j]->Cs().push_back(this->C);
-	    scfrConstraints[j]->dls().push_back(this->dl);
-	    scfrConstraints[j]->dus().push_back(this->du);
+	    scfrConstraints[j]->Cs().push_back(C);
+	    scfrConstraints[j]->dls().push_back(dl);
+	    scfrConstraints[j]->dus().push_back(du);
 	  }
 	  if (scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name)) {
 	    scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name));
 	    scfrConstraints[j]->poses().push_back(preState.contacts[i].c2.localPose);
 	    scfrConstraints[j]->As().emplace_back(0,6);
 	    scfrConstraints[j]->bs().emplace_back(0);
-	    scfrConstraints[j]->Cs().push_back(this->C);
-	    scfrConstraints[j]->dls().push_back(this->dl);
-	    scfrConstraints[j]->dus().push_back(this->du);
+	    scfrConstraints[j]->Cs().push_back(C);
+	    scfrConstraints[j]->dls().push_back(dl);
+	    scfrConstraints[j]->dus().push_back(du);
 	  }
 	}
       }

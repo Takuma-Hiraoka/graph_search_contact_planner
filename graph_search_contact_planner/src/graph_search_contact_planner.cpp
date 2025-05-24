@@ -1,8 +1,6 @@
 #include <graph_search_contact_planner/contact_graph.h>
 #include <graph_search_contact_planner/contact_node.h>
 #include <graph_search_contact_planner/util.h>
-#include <thread>
-#include <mutex>
 
 namespace graph_search_contact_planner{
   inline std::set<cnoid::BodyPtr> getBodies(const std::vector<cnoid::LinkPtr>& links){
@@ -18,49 +16,56 @@ namespace graph_search_contact_planner{
     current_node->state() = *(this->param.currentContactState);
     this->graph().push_back(current_node);
 
-    if (this->param.threads > 1) {
-      // copy
-      this->modelMaps.clear();
-      this->variabless.clear();
-      this->constraintss.clear();
-      this->rejectionss.clear();
-      this->nominalss.clear();
-      for (int i=0; i< this->param.threads; i++){
-	std::set<cnoid::BodyPtr> bodies = getBodies(param.variables);
-	std::map<cnoid::BodyPtr, cnoid::BodyPtr> modelMap;
-	for(std::set<cnoid::BodyPtr>::iterator it = bodies.begin(); it != bodies.end(); it++){
-	  modelMap[*it] = (*it)->clone();
-	}
-	this->modelMaps.push_back(modelMap); // cloneしたbodyがデストラクトされないように、保管しておく
-	this->variabless.push_back(std::vector<cnoid::LinkPtr>(param.variables.size()));
-	for(int v=0;v<param.variables.size();v++){
-	  this->variabless.back()[v] = modelMap[param.variables[v]->body()]->link(param.variables[v]->index());
-	}
-	this->constraintss.push_back(std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >(param.constraints.size()));
-	for(int j=0;j<param.constraints.size();j++){
-	  this->constraintss.back()[j].resize(param.constraints[j].size());
-	  for(int k=0;k<param.constraints[j].size();k++){
-	    this->constraintss.back()[j][k] = param.constraints[j][k]->clone(modelMap);
-	  }
-	}
-	this->rejectionss.push_back(std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >(param.rejections.size()));
-	for(int j=0;j<param.rejections.size();j++){
-	  this->rejectionss.back()[j] = param.rejections[j]->clone(modelMap);
-	}
-	this->nominalss.push_back(std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >(param.nominals.size()));
-	for(int j=0;j<param.nominals.size();j++){
-	  this->nominalss.back()[j] = param.nominals[j]->clone(modelMap);
-	}
-      } // copy
-    }
+    return this->search();
+  }
 
-    bool solved = this->search();
-    this->modelMaps.clear();
-    this->variabless.clear();
-    this->constraintss.clear();
-    this->rejectionss.clear();
-    this->nominalss.clear();
-    return solved;
+  std::shared_ptr<graph_search::Planner::TransitionCheckParam> ContactPlanner::generateCheckParam() {
+    std::set<cnoid::BodyPtr> bodies = getBodies(this->param.variables);
+    std::shared_ptr<ContactTransitionCheckParam> checkParam = std::make_shared<ContactTransitionCheckParam>();
+    for(std::set<cnoid::BodyPtr>::iterator it = bodies.begin(); it != bodies.end(); it++){
+      checkParam->modelMap[*it] = (*it)->clone();
+    }
+    checkParam->variables = std::vector<cnoid::LinkPtr>(param.variables.size());
+    for(int v=0;v<param.variables.size();v++){
+      checkParam->variables[v] = checkParam->modelMap[param.variables[v]->body()]->link(param.variables[v]->index());
+    }
+    checkParam->constraints = std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >(param.constraints.size());
+    for(int j=0;j<param.constraints.size();j++){
+      checkParam->constraints[j].resize(param.constraints[j].size());
+      for(int k=0;k<param.constraints[j].size();k++){
+        checkParam->constraints[j][k] = param.constraints[j][k]->clone(checkParam->modelMap);
+      }
+    }
+    checkParam->rejections = std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >(param.rejections.size());
+    for(int j=0;j<param.rejections.size();j++){
+      checkParam->rejections[j] = param.rejections[j]->clone(checkParam->modelMap);
+    }
+    checkParam->nominals = std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >(param.nominals.size());
+    for(int j=0;j<param.nominals.size();j++){
+      checkParam->nominals[j] = param.nominals[j]->clone(checkParam->modelMap);
+    }
+    checkParam->pikParam = param.pikParam;
+    checkParam->gikParam = param.gikParam;
+
+    return checkParam;
+  }
+
+  void ContactPlanner::prepareCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) {
+    std::weak_ptr<graph_search::Node> parent = extend_node->parent();
+    if (parent.expired()) std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->preState = std::static_pointer_cast<ContactNode>(extend_node)->state(); // 初期状態なので絶対に遷移可能にしておく.
+    else std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->preState = std::static_pointer_cast<ContactNode>(parent.lock())->state();
+  }
+
+  bool ContactPlanner::checkTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) {
+    std::shared_ptr<ContactTransitionCheckParam> contactCheckParam = std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam);
+    return this->checkTransitionImpl(contactCheckParam->preState,
+				     std::static_pointer_cast<ContactNode>(extend_node)->state(),
+				     contactCheckParam->variables,
+				     contactCheckParam->constraints,
+				     contactCheckParam->rejections,
+				     contactCheckParam->nominals,
+				     contactCheckParam->pikParam,
+				     contactCheckParam->gikParam);
   }
 
   bool ContactPlanner::isGoalSatisfied(std::shared_ptr<graph_search::Node> node) {
@@ -96,7 +101,7 @@ namespace graph_search_contact_planner{
       std::cerr << "extend_state" << std::endl;
       std::cerr << extend_state << std::endl;
     }
-    std::vector<std::shared_ptr<ContactNode> > adjacentNodeCandidates;
+    std::vector<std::shared_ptr<graph_search::Node> > adjacentNodes;
     // 接触の減少
     if (extend_state.contacts.size() >= 2) {
       for (int i=0; i<extend_state.contacts.size();i++) {
@@ -104,7 +109,7 @@ namespace graph_search_contact_planner{
 	newNode->parent() = extend_node;
 	newNode->state() = extend_state;
 	newNode->state().contacts.erase(newNode->state().contacts.begin()+i);
-	adjacentNodeCandidates.push_back(newNode);
+	adjacentNodes.push_back(newNode);
       }
     }
 
@@ -127,7 +132,7 @@ namespace graph_search_contact_planner{
 	newNode->parent() = extend_node;
 	newNode->state() = extend_state;
 	newNode->state().contacts.push_back(Contact(*(param.contactDynamicCandidates[i]), *(param.contactStaticCandidates[j])));
-	adjacentNodeCandidates.push_back(newNode);
+	adjacentNodes.push_back(newNode);
       }
     }
 
@@ -138,93 +143,32 @@ namespace graph_search_contact_planner{
 	newNode->parent() = extend_node;
 	newNode->state() = extend_state;
 	newNode->state().contacts.push_back(Contact(*(param.contactDynamicCandidates[i]), *(param.contactDynamicCandidates[j])));
-	adjacentNodeCandidates.push_back(newNode);
+	adjacentNodes.push_back(newNode);
       }
     }
 
     // 再訪しない
     for (int i=0;i<this->graph().size();i++) {
-      for(int j=0;j<adjacentNodeCandidates.size();j++) {
-	if (std::static_pointer_cast<ContactNode>(this->graph()[i])->state() == adjacentNodeCandidates[j]->state()) {
-	  adjacentNodeCandidates.erase(adjacentNodeCandidates.begin()+j);
+      for(int j=0;j<adjacentNodes.size();j++) {
+	if (std::static_pointer_cast<ContactNode>(this->graph()[i])->state() == std::static_pointer_cast<ContactNode>(adjacentNodes[j])->state()) {
+	  adjacentNodes.erase(adjacentNodes.begin()+j);
 	  break;
 	}
       }
     }
 
-    std::vector<std::shared_ptr<graph_search::Node> > adjacentNodes;
-    int numThreads = (this->param.threads > adjacentNodeCandidates.size()) ? adjacentNodeCandidates.size() : this->param.threads;
-    if (numThreads > 1) {
-      std::shared_ptr<unsigned int> count = std::make_shared<unsigned int>(0);
-      std::vector<std::thread *> th(numThreads);
-      std::shared_ptr<std::mutex> threadLock = std::make_shared<std::mutex>();
-      std::shared_ptr<std::vector<bool> > transitions = std::make_shared<std::vector<bool> >(adjacentNodeCandidates.size(), false);
-      for (unsigned int i=0; i < numThreads; i++) {
-	th[i] = new std::thread([&count, &threadLock, &transitions, extend_state, &adjacentNodeCandidates, this, i]
-				{ return checkTransitionThread(count, threadLock, transitions, extend_state, adjacentNodeCandidates, this->variabless[i], this->constraintss[i], this->rejectionss[i], this->nominalss[i], this->param.pikParam, this->param.gikParam);
-				});
-      }
-      for (unsigned int i=0; i < numThreads; i++) {
-	th[i]->join();
-	delete th[i];
-      }
-      for (int i=0; i<adjacentNodeCandidates.size(); i++) {
-	if ((*transitions)[i]) adjacentNodes.push_back(adjacentNodeCandidates[i]);
-      }
-
-    } else {
-      for (int i=0; i<adjacentNodeCandidates.size(); i++) {
-	if(checkTransition(extend_state, adjacentNodeCandidates[i]->state(), param.variables, param.constraints, param.rejections, param.nominals, param.pikParam, param.gikParam)) adjacentNodes.push_back(adjacentNodeCandidates[i]);
-      }
-    }
-
-    if (this->debugLevel() >= 1) {
-      std::cerr << "adjacent node : " << adjacentNodes.size() << " in " << adjacentNodeCandidates.size() << " candidates"<< std::endl;
-    }
-
     return adjacentNodes;
   }
 
-  bool ContactPlanner::checkTransitionThread(std::shared_ptr<unsigned int> count,
-					     std::shared_ptr<std::mutex> mutex,
-					     std::shared_ptr<std::vector<bool> > transitions,
-					     ContactState preState,
-					     const std::vector<std::shared_ptr<ContactNode> >& adjacentNodeCandidates,
-					     const std::vector<cnoid::LinkPtr>& variables,
-					     const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
-					     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
-					     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
-					     prioritized_inverse_kinematics_solver2::IKParam pikParam,
-					     global_inverse_kinematics_solver::GIKParam gikParam
-					     ) {
-    while (true) {
-      mutex->lock();
-      if ((*count) >= adjacentNodeCandidates.size()) {
-        mutex->unlock();
-        return true;
-      } else {
-	unsigned int count_ = *count;
-        (*count)++;
-        mutex->unlock();
-	std::shared_ptr<ContactNode> node = adjacentNodeCandidates[count_];
-	if(checkTransition(preState, node->state(), variables, constraints, rejections, nominals, pikParam, gikParam)) {
-	  mutex->lock();
-	  (*transitions)[count_] = true;
-	  mutex->unlock();
-	}
-      }
-    }
-  }
-
-  bool ContactPlanner::checkTransition(const ContactState& preState,
-				       ContactState& postState,
-				       const std::vector<cnoid::LinkPtr>& variables,
-				       const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
-				       const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
-				       const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
-				       prioritized_inverse_kinematics_solver2::IKParam pikParam,
-				       global_inverse_kinematics_solver::GIKParam gikParam
-				       ) {
+  bool ContactPlanner::checkTransitionImpl(const ContactState& preState,
+					   ContactState& postState,
+					   const std::vector<cnoid::LinkPtr>& variables,
+					   const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+					   const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+					   const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+					   const prioritized_inverse_kinematics_solver2::IKParam& pikParam,
+					   const global_inverse_kinematics_solver::GIKParam& gikParam
+					   ) {
     if (this->debugLevel() >= 2) {
       std::cerr << "[GraphSearchContactPlanner] checkTransition" << std::endl;
       std::cerr << "preState" << std::endl;
@@ -256,6 +200,7 @@ namespace graph_search_contact_planner{
       }
       if (!solveContactIK(postState, moveContact, postState, IKState::DETACH_FIXED, variables, constraints, rejections, nominals, pikParam, gikParam)) return false;
     } else {
+      if (preState == postState) return true; // 同じ. はじめの接触.
       std::cerr << "[GraphSearchContactPlanner] checkTransition failed!! postState.contacts.size() is same as preState.contacts.size()" << std::endl;
       return false;
     }
