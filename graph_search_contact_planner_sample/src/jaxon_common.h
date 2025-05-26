@@ -6,8 +6,7 @@
 #include <ik_constraint2_distance_field/ik_constraint2_distance_field.h>
 
 namespace graph_search_contact_planner_sample{
-  void generateJAXON(const std::shared_ptr<moveit_extensions::InterpolatedPropagationDistanceField>& field,
-		     graph_search_contact_planner::ContactPlanner::GSCPParam& param
+  void generateJAXON(graph_search_contact_planner::ContactPlanner::GSCPParam& param
 		     );
 }
 #endif

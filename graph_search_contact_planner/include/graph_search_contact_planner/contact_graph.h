@@ -5,6 +5,7 @@
 #include <graph_search_contact_planner/util.h>
 #include <graph_search_contact_planner/contact_state.h>
 #include <graph_search_contact_planner/contact_node.h>
+#include <ik_constraint2_distance_field/ik_constraint2_distance_field.h>
 #include <global_inverse_kinematics_solver/global_inverse_kinematics_solver.h>
 #include <prioritized_inverse_kinematics_solver2/prioritized_inverse_kinematics_solver2.h>
 
@@ -16,7 +17,7 @@ namespace graph_search_contact_planner{
       ContactState preState;
       std::map<cnoid::BodyPtr, cnoid::BodyPtr> modelMap;
       std::vector<cnoid::LinkPtr> variables;
-      std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > constraints;
+      std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints;
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > rejections;
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > nominals;
       prioritized_inverse_kinematics_solver2::IKParam pikParam;
@@ -32,7 +33,7 @@ namespace graph_search_contact_planner{
     bool checkTransitionImpl(const ContactState& preState,
 			     ContactState& postState,
 			     const std::vector<cnoid::LinkPtr>& variables,
-			     const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+			     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& constraints,
 			     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
 			     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
 			     const prioritized_inverse_kinematics_solver2::IKParam& pikParam,
@@ -43,7 +44,7 @@ namespace graph_search_contact_planner{
 			ContactState& postState,
 			const IKState& ikState,
 			const std::vector<cnoid::LinkPtr>& variables,
-			const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+			const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& constraints,
 			const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
 			const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
 			prioritized_inverse_kinematics_solver2::IKParam pikParam,
@@ -55,7 +56,7 @@ namespace graph_search_contact_planner{
     public:
       std::vector<cnoid::BodyPtr> bodies; // デストラクトされないように保持しておく
       std::vector<cnoid::LinkPtr> variables;
-      std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > constraints;
+      std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints;
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > rejections;
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > nominals;
       std::shared_ptr<ContactState> currentContactState;
@@ -64,6 +65,7 @@ namespace graph_search_contact_planner{
       std::vector<std::shared_ptr<ContactCandidate> > contactStaticCandidates; // staticCondidate同士の接触は起こりえない
       prioritized_inverse_kinematics_solver2::IKParam pikParam;
       global_inverse_kinematics_solver::GIKParam gikParam;
+      std::shared_ptr<moveit_extensions::InterpolatedPropagationDistanceField> field;
       std::shared_ptr<choreonoid_viewer::Viewer> viewer = nullptr;
 
       GSCPParam() {

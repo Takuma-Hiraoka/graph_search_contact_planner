@@ -7,8 +7,10 @@
 
 namespace graph_search_contact_planner_sample{
   void generateStepWorld(cnoid::BodyPtr& obstacle,
-			 std::shared_ptr<moveit_extensions::InterpolatedPropagationDistanceField> field,
 			 graph_search_contact_planner::ContactPlanner::GSCPParam& param
+			 );
+  void generateTableWorld(cnoid::BodyPtr& obstacle,
+			  graph_search_contact_planner::ContactPlanner::GSCPParam& param
 			 );
 }
 #endif

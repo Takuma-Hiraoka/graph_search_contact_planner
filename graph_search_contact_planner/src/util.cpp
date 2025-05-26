@@ -8,7 +8,7 @@ namespace graph_search_contact_planner{
 				      ContactState& postState,
 				      const IKState& ikState,
 				      const std::vector<cnoid::LinkPtr>& variables,
-				      const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+				      const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& constraints,
 				      const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
 				      const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
 				      prioritized_inverse_kinematics_solver2::IKParam pikParam,
@@ -19,15 +19,35 @@ namespace graph_search_contact_planner{
     for(size_t i=0;i<variables.size();i++){
       if(variables[i]->body()) bodies.insert(variables[i]->body());
     }
-    std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints0;
+    std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints0; // 幾何干渉や重心制約. 
+    std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints1; // 動かさない接触
+    std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints2; // 動かす接触
+
+    for (int i=0; i<constraints.size(); i++) {
+      if (typeid(*(param.constraints[i]))==typeid(ik_constraint2_distance_field::DistanceFieldCollisionConstraint)) {
+	bool skip=false;
+	for (int j=0; j<preState.contacts.size() && !skip; j++) {
+	  if ((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) ||
+	      (preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) skip = true;
+	}
+	if (!skip ||
+	    (ikState==IKState::ATTACH_FIXED) ||
+	    (ikState==IKState::DETACH_FIXED)) {
+	  if ((moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) ||
+	      (moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) skip = true;
+	}
+
+	if (!skip) constraints0.push_back(constraints[i]);
+      }
+    }
+    // scfrConstraint
     std::vector<std::shared_ptr<ik_constraint2_scfr::ScfrConstraint> > scfrConstraints;
     for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
       std::shared_ptr<ik_constraint2_scfr::ScfrConstraint> scfrConstraint = std::make_shared<ik_constraint2_scfr::ScfrConstraint>();
       scfrConstraint->A_robot() = (*it);
       scfrConstraints.push_back(scfrConstraint);
     }
-    std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints1;
-    std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints2;
+
     {
       for (int i=0; i<preState.contacts.size(); i++) {
         std::shared_ptr<ik_constraint2::PositionConstraint> constraint = std::make_shared<ik_constraint2::PositionConstraint>();

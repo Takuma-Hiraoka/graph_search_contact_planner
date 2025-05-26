@@ -8,20 +8,26 @@
 namespace graph_search_contact_planner_sample{
   void sample0_display(){
     cnoid::BodyPtr obstacle;
-    std::shared_ptr<moveit_extensions::InterpolatedPropagationDistanceField> field;
     graph_search_contact_planner::ContactPlanner planner;
     std::shared_ptr<choreonoid_viewer::Viewer> viewer = std::make_shared<choreonoid_viewer::Viewer>();
     planner.param.viewer = viewer;
-    generateStepWorld(obstacle, field, planner.param);
-    generateJAXON(field, planner.param);
+    generateStepWorld(obstacle, planner.param);
+    generateJAXON(planner.param);
     std::set<cnoid::BodyPtr> bodies;
     for(size_t i=0;i<planner.param.variables.size();i++){
       if(planner.param.variables[i]->body()) bodies.insert(planner.param.variables[i]->body());
     }
 
     std::shared_ptr<graph_search_contact_planner::ContactState> goalContactState = std::make_shared<graph_search_contact_planner::ContactState>();
-    goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
-    goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
+    // {
+    //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
+    //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
+    // }
+    {
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor3")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor3")));
+    }
+    
     planner.param.goalContactState = goalContactState;
     planner.debugLevel() = 0;
     planner.threads() = 10;
@@ -46,23 +52,24 @@ namespace graph_search_contact_planner_sample{
       planner.goalPath(path);
       std::cerr << "path size : " << path.size() << std::endl;
       while(true) {
-	for(int i=0;i<path.size();i++){
-	  for (int j=0;j<path[i].transition.size();j++) {
-	    global_inverse_kinematics_solver::frame2Link(path[i].transition[j], planner.param.variables);
-	    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-	      (*it)->calcForwardKinematics(false);
-	    }
-	    viewer->drawObjects();
-	    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / path[i].transition.size()));
-	  }
-	  global_inverse_kinematics_solver::frame2Link(path[i].frame, planner.param.variables);
-	    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-	      (*it)->calcForwardKinematics(false);
-	    }
-	  viewer->drawObjects();
-	  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-	}
+    	for(int i=0;i<path.size();i++){
+    	  for (int j=0;j<path[i].transition.size();j++) {
+    	    global_inverse_kinematics_solver::frame2Link(path[i].transition[j], planner.param.variables);
+    	    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
+    	      (*it)->calcForwardKinematics(false);
+    	    }
+    	    viewer->drawObjects();
+    	    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / path[i].transition.size()));
+    	  }
+    	  global_inverse_kinematics_solver::frame2Link(path[i].frame, planner.param.variables);
+    	    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
+    	      (*it)->calcForwardKinematics(false);
+    	    }
+    	  viewer->drawObjects();
+    	  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    	}
       }
     }
+
   }
 }

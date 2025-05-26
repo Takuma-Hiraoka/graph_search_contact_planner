@@ -29,12 +29,9 @@ namespace graph_search_contact_planner{
     for(int v=0;v<param.variables.size();v++){
       checkParam->variables[v] = checkParam->modelMap[param.variables[v]->body()]->link(param.variables[v]->index());
     }
-    checkParam->constraints = std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >(param.constraints.size());
+    checkParam->constraints = std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >(param.constraints.size());
     for(int j=0;j<param.constraints.size();j++){
-      checkParam->constraints[j].resize(param.constraints[j].size());
-      for(int k=0;k<param.constraints[j].size();k++){
-        checkParam->constraints[j][k] = param.constraints[j][k]->clone(checkParam->modelMap);
-      }
+      checkParam->constraints[j] = param.constraints[j]->clone(checkParam->modelMap);
     }
     checkParam->rejections = std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >(param.rejections.size());
     for(int j=0;j<param.rejections.size();j++){
@@ -163,7 +160,7 @@ namespace graph_search_contact_planner{
   bool ContactPlanner::checkTransitionImpl(const ContactState& preState,
 					   ContactState& postState,
 					   const std::vector<cnoid::LinkPtr>& variables,
-					   const std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > >& constraints,
+					   const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& constraints,
 					   const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
 					   const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
 					   const prioritized_inverse_kinematics_solver2::IKParam& pikParam,

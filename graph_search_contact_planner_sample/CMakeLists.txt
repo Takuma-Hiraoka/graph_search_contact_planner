@@ -8,6 +8,8 @@ find_package(catkin REQUIRED COMPONENTS
   graph_search_contact_planner
   choreonoid_viewer
   ik_constraint2_distance_field
+  ik_constraint2_bullet
+  choreonoid_bullet
   roslib
   )
 
@@ -24,6 +26,7 @@ include_directories(
 add_library(CnoidGraphSearchContactPlannerSamplePlugin SHARED
   src/CnoidGraphSearchContactPlannerSamplePlugin.cpp
   src/sample0_display.cpp
+  src/sample1_box.cpp
   src/world_common.cpp
   src/jaxon_common.cpp
   )
