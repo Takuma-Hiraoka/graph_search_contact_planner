@@ -24,8 +24,8 @@ namespace graph_search_contact_planner{
     std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints2; // 動かす接触
 
     for (int i=0; i<constraints.size(); i++) {
+      bool skip=false;
       if (typeid(*(param.constraints[i]))==typeid(ik_constraint2_distance_field::DistanceFieldCollisionConstraint)) {
-	bool skip=false;
 	for (int j=0; j<preState.contacts.size() && !skip; j++) {
 	  if ((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) ||
 	      (preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) skip = true;
@@ -36,9 +36,8 @@ namespace graph_search_contact_planner{
 	  if ((moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) ||
 	      (moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) skip = true;
 	}
-
-	if (!skip) constraints0.push_back(constraints[i]);
       }
+      if (!skip) constraints0.push_back(constraints[i]);
     }
     // scfrConstraint
     std::vector<std::shared_ptr<ik_constraint2_scfr::ScfrConstraint> > scfrConstraints;
