@@ -6,6 +6,7 @@
 #include <graph_search_contact_planner/contact_state.h>
 #include <graph_search_contact_planner/contact_node.h>
 #include <ik_constraint2_distance_field/ik_constraint2_distance_field.h>
+#include <ik_constraint2_bullet/ik_constraint2_bullet.h>
 #include <global_inverse_kinematics_solver/global_inverse_kinematics_solver.h>
 #include <prioritized_inverse_kinematics_solver2/prioritized_inverse_kinematics_solver2.h>
 

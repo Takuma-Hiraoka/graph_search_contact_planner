@@ -11,8 +11,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>graph_search_contact_planner</depend>
   <depend>choreonoid_viewer</depend>
-  <depend>ik_constraint2_distance_field</depend>
-  <depend>ik_constraint2_bullet</depend>
   <depend>jvrc_models</depend>
+  <depend>eusurdfwrl</depend>
 
 </package>

@@ -129,7 +129,7 @@ namespace graph_search_contact_planner_sample{
           material->setDiffuseColor(cnoid::Vector3f(0.6, 0.6, 0.6));
           shape->setMaterial(material);
           cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
-          posTransform->translation() = cnoid::Vector3(1.0,0,1.0-0.05);
+          posTransform->translation() = cnoid::Vector3(0.6,0,1.0-0.05);
           posTransform->addChild(shape);
           rootLink->addShapeNode(posTransform);
         }
@@ -141,7 +141,7 @@ namespace graph_search_contact_planner_sample{
 	  material->setDiffuseColor(cnoid::Vector3f(0.6,0.6,0.6));
 	  shape->setMaterial(material);
 	  cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
-          posTransform->translation() = cnoid::Vector3(1.0,0,0.45);
+          posTransform->translation() = cnoid::Vector3(0.6,0,0.45);
 	  posTransform->rotation() = cnoid::rotFromRpy(M_PI /2, 0, 0);
 	  posTransform->addChild(shape);
 	  rootLink->addShapeNode(posTransform);
@@ -154,7 +154,7 @@ namespace graph_search_contact_planner_sample{
           material->setDiffuseColor(cnoid::Vector3f(0.6, 0.6, 0.6));
           shape->setMaterial(material);
           cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
-          posTransform->translation() = cnoid::Vector3(0,1.0,1.0-0.05);
+          posTransform->translation() = cnoid::Vector3(0,0.6,1.0-0.05);
           posTransform->addChild(shape);
           rootLink->addShapeNode(posTransform);
         }
@@ -166,7 +166,7 @@ namespace graph_search_contact_planner_sample{
 	  material->setDiffuseColor(cnoid::Vector3f(0.6,0.6,0.6));
 	  shape->setMaterial(material);
 	  cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
-          posTransform->translation() = cnoid::Vector3(0,1.0,0.45);
+          posTransform->translation() = cnoid::Vector3(0,0.6,0.45);
 	  posTransform->rotation() = cnoid::rotFromRpy(M_PI /2, 0, 0);
 	  posTransform->addChild(shape);
 	  rootLink->addShapeNode(posTransform);
@@ -218,7 +218,7 @@ namespace graph_search_contact_planner_sample{
       for(int i=0; i<3; i++) {
 	for(int j=0; j<3; j++) {
 	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("table1");
-	  cc1->localPose.translation() = cnoid::Vector3(1.0-0.2+0.2*i, -0.2+0.2*j, 1.0);
+	  cc1->localPose.translation() = cnoid::Vector3(0.6-0.2+0.2*i, -0.2+0.2*j, 1.0);
 	  cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc1);
 	}
@@ -226,7 +226,7 @@ namespace graph_search_contact_planner_sample{
       for(int i=0; i<3; i++) {
 	for(int j=0; j<3; j++) {
 	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("table2");
-	  cc1->localPose.translation() = cnoid::Vector3(-0.2+0.2*i, 1.0-0.2+0.2*j, 1.0);
+	  cc1->localPose.translation() = cnoid::Vector3(-0.2+0.2*i, 0.6-0.2+0.2*j, 1.0);
 	  cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc1);
 	}

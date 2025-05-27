@@ -5,6 +5,7 @@
 #include "world_common.h"
 #include "jaxon_common.h"
 #include "box_common.h"
+#include <cnoid/TimeMeasure>
 
 namespace graph_search_contact_planner_sample{
   void sample1_box(){
@@ -24,9 +25,19 @@ namespace graph_search_contact_planner_sample{
     }
 
     std::shared_ptr<graph_search_contact_planner::ContactState> goalContactState = std::make_shared<graph_search_contact_planner::ContactState>();
+    {
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("box")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("box")));
+    }
+    {
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("table2"), graph_search_contact_planner::ContactCandidate("box")));
+    }
     planner.param.goalContactState = goalContactState;
     planner.debugLevel() = 0;
-    planner.threads() = 10;
+    planner.threads() = 20;
+    // planner.param.pikParam.debugLevel = 3;
+    // planner.param.pikParam.viewMilliseconds = -1;
+    // planner.param.pikParam.viewer = viewer;
 
     viewer->objects(obstacle);
 
@@ -42,29 +53,38 @@ namespace graph_search_contact_planner_sample{
 
     viewer->drawObjects();
 
-    // if(planner.solve()) {
-    //   std::cerr << "solved!" << std::endl;
-    //   std::vector<graph_search_contact_planner::ContactState> path;
-    //   planner.goalPath(path);
-    //   std::cerr << "path size : " << path.size() << std::endl;
-    //   while(true) {
-    // 	for(int i=0;i<path.size();i++){
-    // 	  for (int j=0;j<path[i].transition.size();j++) {
-    // 	    global_inverse_kinematics_solver::frame2Link(path[i].transition[j], planner.param.variables);
-    // 	    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-    // 	      (*it)->calcForwardKinematics(false);
-    // 	    }
-    // 	    viewer->drawObjects();
-    // 	    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / path[i].transition.size()));
-    // 	  }
-    // 	  global_inverse_kinematics_solver::frame2Link(path[i].frame, planner.param.variables);
-    // 	    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-    // 	      (*it)->calcForwardKinematics(false);
-    // 	    }
-    // 	  viewer->drawObjects();
-    // 	  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    // 	}
-    //   }
-    // }
+    cnoid::TimeMeasure timer;
+    timer.begin();
+    if(planner.solve()) {
+      std::cerr << "solved!" << std::endl;
+      std::cerr << "calc time " << timer.measure() << " [s]" << std::endl;
+      std::cerr << "graph size : " << planner.graph().size() << std::endl;
+      unsigned int count = 0;
+      for (int i=0;i<planner.graph().size(); i++) {
+	if (planner.graph()[i]->extended()) count++;
+      }
+      std::cerr << "extend count : " << count << std::endl;
+      std::vector<graph_search_contact_planner::ContactState> path;
+      planner.goalPath(path);
+      std::cerr << "path size : " << path.size() << std::endl;
+      while(true) {
+    	for(int i=0;i<path.size();i++){
+    	  for (int j=0;j<path[i].transition.size();j++) {
+    	    global_inverse_kinematics_solver::frame2Link(path[i].transition[j], planner.param.variables);
+    	    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
+    	      (*it)->calcForwardKinematics(false);
+    	    }
+    	    viewer->drawObjects();
+    	    std::this_thread::sleep_for(std::chrono::milliseconds(1000 / path[i].transition.size()));
+    	  }
+    	  global_inverse_kinematics_solver::frame2Link(path[i].frame, planner.param.variables);
+    	    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
+    	      (*it)->calcForwardKinematics(false);
+    	    }
+    	  viewer->drawObjects();
+    	  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    	}
+      }
+    }
   }
 }

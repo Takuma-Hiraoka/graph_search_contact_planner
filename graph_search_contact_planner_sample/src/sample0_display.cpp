@@ -25,6 +25,8 @@ namespace graph_search_contact_planner_sample{
     //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
     // }
     {
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor2")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor2")));
       goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2")));
       goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2")));
     }

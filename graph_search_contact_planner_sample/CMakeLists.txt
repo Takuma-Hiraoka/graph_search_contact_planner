@@ -7,8 +7,6 @@ set(CMAKE_BUILD_TYPE Release)
 find_package(catkin REQUIRED COMPONENTS
   graph_search_contact_planner
   choreonoid_viewer
-  ik_constraint2_distance_field
-  ik_constraint2_bullet
   choreonoid_bullet
   roslib
   )

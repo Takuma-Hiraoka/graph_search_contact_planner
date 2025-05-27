@@ -27,14 +27,26 @@ namespace graph_search_contact_planner{
       bool skip=false;
       if (typeid(*(param.constraints[i]))==typeid(ik_constraint2_distance_field::DistanceFieldCollisionConstraint)) {
 	for (int j=0; j<preState.contacts.size() && !skip; j++) {
-	  if ((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) ||
-	      (preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) skip = true;
+	  if (((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && preState.contacts[j].c2.isStatic) ||
+	      ((preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && preState.contacts[j].c1.isStatic)) skip = true;
 	}
 	if (!skip ||
 	    (ikState==IKState::ATTACH_FIXED) ||
 	    (ikState==IKState::DETACH_FIXED)) {
 	  if ((moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) ||
 	      (moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) skip = true;
+	}
+      }
+      if (typeid(*(param.constraints[i]))==typeid(ik_constraint2_bullet::BulletCollisionConstraint)) {
+	for (int j=0; j<preState.contacts.size() && !skip; j++) {
+	  if (((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name())) ||
+	      ((preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name()))) skip = true;
+	}
+	if (!skip ||
+	    (ikState==IKState::ATTACH_FIXED) ||
+	    (ikState==IKState::DETACH_FIXED)) {
+	  if (((moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name())) ||
+	      ((moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name()))) skip = true;
 	}
       }
       if (!skip) constraints0.push_back(constraints[i]);

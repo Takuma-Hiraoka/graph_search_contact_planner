@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   global_inverse_kinematics_solver
   ik_constraint2_scfr
   ik_constraint2_distance_field
+  ik_constraint2_bullet
   )
 
 find_package(choreonoid REQUIRED)
@@ -17,7 +18,7 @@ find_package(choreonoid REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS graph_search prioritized_inverse_kinematics_solver2 global_inverse_kinematics_solver ik_constraint2_scfr ik_constraint2_distance_field
+  CATKIN_DEPENDS graph_search prioritized_inverse_kinematics_solver2 global_inverse_kinematics_solver ik_constraint2_scfr ik_constraint2_distance_field ik_constraint2_bullet
 )
 
 include_directories(

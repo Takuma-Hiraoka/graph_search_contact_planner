@@ -3,7 +3,6 @@
 #include <cnoid/BodyLoader>
 #include <ros/package.h>
 #include <choreonoid_bullet/choreonoid_bullet.h>
-#include <ik_constraint2_bullet/ik_constraint2_bullet.h>
 
 namespace graph_search_contact_planner_sample{
   void generateJAXON(graph_search_contact_planner::ContactPlanner::GSCPParam& param
