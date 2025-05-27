@@ -25,16 +25,17 @@ namespace graph_search_contact_planner_sample{
     }
 
     std::shared_ptr<graph_search_contact_planner::ContactState> goalContactState = std::make_shared<graph_search_contact_planner::ContactState>();
-    {
-      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("box")));
-      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("box")));
-    }
+    // {
+    //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("box")));
+    //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("box")));
+    // }
     {
       goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("table2"), graph_search_contact_planner::ContactCandidate("box")));
     }
     planner.param.goalContactState = goalContactState;
-    planner.debugLevel() = 0;
+    planner.debugLevel() = 1;
     planner.threads() = 20;
+    planner.maxExtendNum() = 1e6;
     // planner.param.pikParam.debugLevel = 3;
     // planner.param.pikParam.viewMilliseconds = -1;
     // planner.param.pikParam.viewer = viewer;

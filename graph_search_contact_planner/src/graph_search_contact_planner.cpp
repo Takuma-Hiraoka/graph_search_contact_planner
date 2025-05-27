@@ -47,16 +47,21 @@ namespace graph_search_contact_planner{
     return checkParam;
   }
 
-  void ContactPlanner::prepareCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) {
+  void ContactPlanner::preCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) {
     std::weak_ptr<graph_search::Node> parent = extend_node->parent();
     if (parent.expired()) std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->preState = std::static_pointer_cast<ContactNode>(extend_node)->state(); // 初期状態なので絶対に遷移可能にしておく.
     else std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->preState = std::static_pointer_cast<ContactNode>(parent.lock())->state();
+    std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->postState = std::static_pointer_cast<ContactNode>(extend_node)->state();
   }
 
-  bool ContactPlanner::checkTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) {
+  void ContactPlanner::postCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) {
+    std::static_pointer_cast<ContactNode>(extend_node)->state() = std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->postState;
+  }
+
+  bool ContactPlanner::checkTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) {
     std::shared_ptr<ContactTransitionCheckParam> contactCheckParam = std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam);
     return this->checkTransitionImpl(contactCheckParam->preState,
-				     std::static_pointer_cast<ContactNode>(extend_node)->state(),
+				     contactCheckParam->postState,
 				     contactCheckParam->variables,
 				     contactCheckParam->constraints,
 				     contactCheckParam->rejections,
@@ -65,8 +70,8 @@ namespace graph_search_contact_planner{
 				     contactCheckParam->gikParam);
   }
 
-  bool ContactPlanner::isGoalSatisfied(std::shared_ptr<graph_search::Node> node) {
-    ContactState state = std::static_pointer_cast<ContactNode>(node)->state();
+  bool ContactPlanner::isGoalSatisfied(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) {
+    ContactState state = std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->postState;
     for (int i=0;i<this->param.goalContactState->contacts.size();i++) {
       bool satisfied = false;
       for (int j=0;j<state.contacts.size();j++) {
@@ -94,7 +99,7 @@ namespace graph_search_contact_planner{
 
   std::vector<std::shared_ptr<graph_search::Node> > ContactPlanner::gatherAdjacentNodes(std::shared_ptr<graph_search::Node> extend_node) {
     ContactState extend_state = std::static_pointer_cast<ContactNode>(extend_node)->state();
-    if (this->debugLevel() >= 1) {
+    if (this->debugLevel() >= 2) {
       std::cerr << "extend_state" << std::endl;
       std::cerr << extend_state << std::endl;
     }

@@ -162,7 +162,10 @@ namespace graph_search_contact_planner{
     moveContactConstraint->weight() << 1.0, 1.0, 1.0, 1.0, 1.0, 0.0;
     constraints2.push_back(moveContactConstraint);
 
-    for (int i=0;i<scfrConstraints.size();i++) constraints0.push_back(scfrConstraints[i]);
+    for (int i=0;i<scfrConstraints.size();i++) {
+      if (scfrConstraints[i]->poses().size() == 0) return false; // 接触が存在しない物体がある.
+      constraints0.push_back(scfrConstraints[i]);
+    }
 
     bool solved = false;
     std::vector<std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > > constraint{constraints0, constraints1, constraints2, nominals};

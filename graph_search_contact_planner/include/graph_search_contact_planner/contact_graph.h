@@ -16,6 +16,7 @@ namespace graph_search_contact_planner{
     class ContactTransitionCheckParam : public graph_search::Planner::TransitionCheckParam {
     public:
       ContactState preState;
+      ContactState postState;
       std::map<cnoid::BodyPtr, cnoid::BodyPtr> modelMap;
       std::vector<cnoid::LinkPtr> variables;
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints;
@@ -25,9 +26,10 @@ namespace graph_search_contact_planner{
       global_inverse_kinematics_solver::GIKParam gikParam;
     };
     std::shared_ptr<graph_search::Planner::TransitionCheckParam> generateCheckParam() override;
-    void prepareCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
-    bool checkTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
-    bool isGoalSatisfied(std::shared_ptr<graph_search::Node> node) override; // nodeのcontactsがgoalContactStatesのcontactsを含んでいればtrue. nameのみで座標は無視.
+    void preCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
+    void postCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
+    bool checkTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) override;
+    bool isGoalSatisfied(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) override; // nodeのcontactsがgoalContactStatesのcontactsを含んでいればtrue. nameのみで座標は無視.
     std::vector<std::shared_ptr<graph_search::Node> > gatherAdjacentNodes(std::shared_ptr<graph_search::Node> extend_node) override;
     void calcHeuristic(std::shared_ptr<graph_search::Node> node) override;
 
