@@ -7,6 +7,7 @@
 
 namespace graph_search_contact_planner_sample{
   void sample0_display(){
+    std::cerr << "sample0_display" << std::endl;
     cnoid::BodyPtr obstacle;
     graph_search_contact_planner::ContactPlanner planner;
     std::shared_ptr<choreonoid_viewer::Viewer> viewer = std::make_shared<choreonoid_viewer::Viewer>();
@@ -24,8 +25,8 @@ namespace graph_search_contact_planner_sample{
     //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
     // }
     {
-      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor3")));
-      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor3")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2")));
     }
     
     planner.param.goalContactState = goalContactState;

@@ -13,6 +13,14 @@ namespace graph_search_contact_planner_sample{
   };
   typedef cnoid::ref_ptr<sample0_displayItem> sample0_displayItemPtr;
 
+  void sample1_box();
+  class sample1_boxItem : public choreonoid_viewer::ViewerBaseItem {
+  public:
+    static void initializeClass(cnoid::ExtensionManager* ext){ ext->itemManager().registerClass<sample1_boxItem>("sample1_boxItem"); }
+  protected:
+    virtual void main() override{ sample1_box(); return;}
+  };
+  typedef cnoid::ref_ptr<sample1_boxItem> sample1_boxItemPtr;
   class GraphSearchContactPlannerSamplePlugin : public cnoid::Plugin
   {
   public:
@@ -23,6 +31,7 @@ namespace graph_search_contact_planner_sample{
     virtual bool initialize() override
     {
       sample0_displayItem::initializeClass(this);
+      sample1_boxItem::initializeClass(this);
       return true;
     }
   };

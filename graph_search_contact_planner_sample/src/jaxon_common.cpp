@@ -65,7 +65,7 @@ namespace graph_search_contact_planner_sample{
 	c1.isStatic = false;
 	c1.localPose.translation() = cnoid::Vector3(0, 0, -0.1);
 	graph_search_contact_planner::ContactCandidate c2;
-	c2.name = "floor2";
+	c2.name = "floor";
 	c2.isStatic = true;
 	c2.localPose.translation() = cnoid::Vector3(0.0, -0.1, 0.0);
 	c2.localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
@@ -78,7 +78,7 @@ namespace graph_search_contact_planner_sample{
 	c1.isStatic = false;
 	c1.localPose.translation() = cnoid::Vector3(0, 0, -0.1);
 	graph_search_contact_planner::ContactCandidate c2;
-	c2.name = "floor2";
+	c2.name = "floor";
 	c2.isStatic = true;
 	c2.localPose.translation() = cnoid::Vector3(0.0, 0.1, 0.0);
 	c2.localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);

@@ -182,7 +182,7 @@ namespace graph_search_contact_planner{
                                                           tmpPath);
     }
 
-    postState.transition.insert(postState.transition.begin(), (*tmpPath).begin(), (*tmpPath).end());
+    postState.transition.insert(postState.transition.end(), (*tmpPath).begin(), (*tmpPath).end());
 
     moveContact.c1.localPose.linear() = moveContactConstraint->A_localpos().linear();
     cnoid::Matrix3d B_rot = cnoid::Matrix3d::Identity();

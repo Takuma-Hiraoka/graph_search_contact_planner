@@ -29,6 +29,7 @@ add_library(CnoidGraphSearchContactPlannerSamplePlugin SHARED
   src/sample1_box.cpp
   src/world_common.cpp
   src/jaxon_common.cpp
+  src/box_common.cpp
   )
 
 target_link_libraries(CnoidGraphSearchContactPlannerSamplePlugin  PUBLIC

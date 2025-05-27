@@ -8,7 +8,7 @@ items:
       id: 1
       name: "GraphSearchContactPlannerSamplePlugin"
       plugin: GraphSearchContactPlannerSample
-      class: sample0_displayItem
+      class: sample1_boxItem
 views:
   -
     id: 0

@@ -63,7 +63,7 @@ namespace graph_search_contact_planner_sample{
 	  cc1->localPose.translation() = cnoid::Vector3(0.2+0.2*i, 0.1+0.2*j, 0.0);
 	  cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc1);
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
 	  cc2->localPose.translation() = cnoid::Vector3(-0.2*i, 0.1+0.2*j, 0.0);
 	  cc2->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc2);
@@ -71,7 +71,7 @@ namespace graph_search_contact_planner_sample{
 	  cc3->localPose.translation() = cnoid::Vector3(0.2+0.2*i, -0.1-0.2*j, 0.0);
 	  cc3->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc3);
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
 	  cc4->localPose.translation() = cnoid::Vector3(-0.2*i, -0.1-0.2*j, 0.0);
 	  cc4->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc4);
@@ -80,19 +80,19 @@ namespace graph_search_contact_planner_sample{
 
       for(int i=0; i<2; i++) {
 	for(int j=0; j<2; j++) {
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor3");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
 	  cc1->localPose.translation() = cnoid::Vector3(1.6+0.2*i, 0.1+0.2*j, 0.3);
 	  cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc1);
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor3");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
 	  cc2->localPose.translation() = cnoid::Vector3(1.6-0.2-0.2*i, 0.1+0.2*j, 0.3);
 	  cc2->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc2);
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor3");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
 	  cc3->localPose.translation() = cnoid::Vector3(1.6+0.2*i, -0.1-0.2*j, 0.3);
 	  cc3->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc3);
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor3");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
 	  cc4->localPose.translation() = cnoid::Vector3(1.6-0.2-0.2*i, -0.1-0.2*j, 0.3);
 	  cc4->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc4);
@@ -111,7 +111,7 @@ namespace graph_search_contact_planner_sample{
       {
         {
           cnoid::SgShapePtr shape = new cnoid::SgShape();
-          shape->setMesh(meshGenerator.generateBox(cnoid::Vector3(4,2,0.1)));
+          shape->setMesh(meshGenerator.generateBox(cnoid::Vector3(2.2,2.2,0.1)));
           cnoid::SgMaterialPtr material = new cnoid::SgMaterial();
           material->setTransparency(0);
           material->setDiffuseColor(cnoid::Vector3f(0.6, 0.6, 0.6));
@@ -123,16 +123,54 @@ namespace graph_search_contact_planner_sample{
         }
         {
           cnoid::SgShapePtr shape = new cnoid::SgShape();
-          shape->setMesh(meshGenerator.generateBox(cnoid::Vector3(1,1,0.1)));
+          shape->setMesh(meshGenerator.generateBox(cnoid::Vector3(0.5,0.5,0.1)));
           cnoid::SgMaterialPtr material = new cnoid::SgMaterial();
           material->setTransparency(0);
           material->setDiffuseColor(cnoid::Vector3f(0.6, 0.6, 0.6));
           shape->setMaterial(material);
           cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
-          posTransform->translation() = cnoid::Vector3(1.5,0,0.2+0.05);
+          posTransform->translation() = cnoid::Vector3(1.0,0,1.0-0.05);
           posTransform->addChild(shape);
           rootLink->addShapeNode(posTransform);
         }
+	{
+	  cnoid::SgShapePtr shape = new cnoid::SgShape();
+	  shape->setMesh(meshGenerator.generateCylinder(0.1, 0.9));
+	  cnoid::SgMaterialPtr material = new cnoid::SgMaterial();
+	  material->setTransparency(0);
+	  material->setDiffuseColor(cnoid::Vector3f(0.6,0.6,0.6));
+	  shape->setMaterial(material);
+	  cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
+          posTransform->translation() = cnoid::Vector3(1.0,0,0.45);
+	  posTransform->rotation() = cnoid::rotFromRpy(M_PI /2, 0, 0);
+	  posTransform->addChild(shape);
+	  rootLink->addShapeNode(posTransform);
+	}
+        {
+          cnoid::SgShapePtr shape = new cnoid::SgShape();
+          shape->setMesh(meshGenerator.generateBox(cnoid::Vector3(0.5,0.5,0.1)));
+          cnoid::SgMaterialPtr material = new cnoid::SgMaterial();
+          material->setTransparency(0);
+          material->setDiffuseColor(cnoid::Vector3f(0.6, 0.6, 0.6));
+          shape->setMaterial(material);
+          cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
+          posTransform->translation() = cnoid::Vector3(0,1.0,1.0-0.05);
+          posTransform->addChild(shape);
+          rootLink->addShapeNode(posTransform);
+        }
+	{
+	  cnoid::SgShapePtr shape = new cnoid::SgShape();
+	  shape->setMesh(meshGenerator.generateCylinder(0.1, 0.9));
+	  cnoid::SgMaterialPtr material = new cnoid::SgMaterial();
+	  material->setTransparency(0);
+	  material->setDiffuseColor(cnoid::Vector3f(0.6,0.6,0.6));
+	  shape->setMaterial(material);
+	  cnoid::SgPosTransformPtr posTransform = new cnoid::SgPosTransform();
+          posTransform->translation() = cnoid::Vector3(0,1.0,0.45);
+	  posTransform->rotation() = cnoid::rotFromRpy(M_PI /2, 0, 0);
+	  posTransform->addChild(shape);
+	  rootLink->addShapeNode(posTransform);
+	}
       }
       obstacle->setRootLink(rootLink);
     }
@@ -157,24 +195,40 @@ namespace graph_search_contact_planner_sample{
 
     // contactStaticCandidates
     {
-      for(int i=0; i<2; i++) {
-	for(int j=0; j<2; j++) {
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor1");
+      for(int i=0; i<5; i++) {
+	for(int j=0; j<5; j++) {
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
 	  cc1->localPose.translation() = cnoid::Vector3(0.2+0.2*i, 0.1+0.2*j, 0.0);
 	  cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc1);
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
 	  cc2->localPose.translation() = cnoid::Vector3(-0.2*i, 0.1+0.2*j, 0.0);
 	  cc2->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc2);
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor1");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
 	  cc3->localPose.translation() = cnoid::Vector3(0.2+0.2*i, -0.1-0.2*j, 0.0);
 	  cc3->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc3);
-	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
 	  cc4->localPose.translation() = cnoid::Vector3(-0.2*i, -0.1-0.2*j, 0.0);
 	  cc4->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
 	  param.contactStaticCandidates.push_back(cc4);
+	}
+      }
+      for(int i=0; i<3; i++) {
+	for(int j=0; j<3; j++) {
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("table1");
+	  cc1->localPose.translation() = cnoid::Vector3(1.0-0.2+0.2*i, -0.2+0.2*j, 1.0);
+	  cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
+	  param.contactStaticCandidates.push_back(cc1);
+	}
+      }
+      for(int i=0; i<3; i++) {
+	for(int j=0; j<3; j++) {
+	  std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("table2");
+	  cc1->localPose.translation() = cnoid::Vector3(-0.2+0.2*i, 1.0-0.2+0.2*j, 1.0);
+	  cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
+	  param.contactStaticCandidates.push_back(cc1);
 	}
       }
     }
