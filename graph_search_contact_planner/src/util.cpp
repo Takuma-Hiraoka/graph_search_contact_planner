@@ -30,9 +30,8 @@ namespace graph_search_contact_planner{
 	  if (((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && preState.contacts[j].c2.isStatic) ||
 	      ((preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && preState.contacts[j].c1.isStatic)) skip = true;
 	}
-	if (!skip ||
-	    (ikState==IKState::ATTACH_FIXED) ||
-	    (ikState==IKState::DETACH_FIXED)) {
+	if (!skip && ((ikState==IKState::ATTACH_FIXED) ||
+		      (ikState==IKState::DETACH_FIXED))) {
 	  if ((moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) ||
 	      (moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) skip = true;
 	}
@@ -42,9 +41,8 @@ namespace graph_search_contact_planner{
 	  if (((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name())) ||
 	      ((preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name()))) skip = true;
 	}
-	if (!skip ||
-	    (ikState==IKState::ATTACH_FIXED) ||
-	    (ikState==IKState::DETACH_FIXED)) {
+	if (!skip && ((ikState==IKState::ATTACH_FIXED) ||
+		      (ikState==IKState::DETACH_FIXED))) {
 	  if (((moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name())) ||
 	      ((moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name()))) skip = true;
 	}
@@ -103,11 +101,20 @@ namespace graph_search_contact_planner{
 	C.insert(10,2) = 0.005; C.insert(10,5) = -1.0;
 	cnoid::VectorX dl = Eigen::VectorXd::Zero(11);
 	cnoid::VectorX du = 1e10 * Eigen::VectorXd::Ones(11);
-	du[0] = 20000.0;
+	du[0] = 2000.0;
 	for (int j=0;j<scfrConstraints.size();j++) {
+	  // Linkの位置から出す場合、位置固定でも数値誤差によって姿勢が少しずつずれていき、scfr計算の線型計画法に不具合が生じてscfrの領域が潰れる.
+	  // これを避けるため、staticのときは環境側の接触情報を使う. dynamicのときはbodyごとに2つ以上の接触がありscfrが残ると期待.
 	  if (scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name)) {
-	    scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name));
-	    scfrConstraints[j]->poses().push_back(preState.contacts[i].c1.localPose);
+	    if (preState.contacts[i].c2.isStatic) {
+	      scfrConstraints[j]->links().push_back(nullptr);
+	      cnoid::Isometry3 pose = preState.contacts[i].c2.localPose;
+	      pose.linear() *= cnoid::rotFromRpy(0.0, M_PI, M_PI/2).transpose();
+	      scfrConstraints[j]->poses().push_back(pose);
+	    } else {
+	      scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name));
+	      scfrConstraints[j]->poses().push_back(preState.contacts[i].c1.localPose);
+	    }
 	    scfrConstraints[j]->As().emplace_back(0,6);
 	    scfrConstraints[j]->bs().emplace_back(0);
 	    scfrConstraints[j]->Cs().push_back(C);
@@ -115,8 +122,15 @@ namespace graph_search_contact_planner{
 	    scfrConstraints[j]->dus().push_back(du);
 	  }
 	  if (scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name)) {
-	    scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name));
-	    scfrConstraints[j]->poses().push_back(preState.contacts[i].c2.localPose);
+	    if (preState.contacts[i].c1.isStatic) {
+	      scfrConstraints[j]->links().push_back(nullptr);
+	      cnoid::Isometry3 pose = preState.contacts[i].c1.localPose;
+	      pose.linear() *= cnoid::rotFromRpy(0.0, M_PI, M_PI/2).transpose();
+	      scfrConstraints[j]->poses().push_back(pose);
+	    } else {
+	      scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name));
+	      scfrConstraints[j]->poses().push_back(preState.contacts[i].c2.localPose);
+	    }
 	    scfrConstraints[j]->As().emplace_back(0,6);
 	    scfrConstraints[j]->bs().emplace_back(0);
 	    scfrConstraints[j]->Cs().push_back(C);
@@ -199,13 +213,15 @@ namespace graph_search_contact_planner{
 
     postState.transition.insert(postState.transition.end(), (*tmpPath).begin(), (*tmpPath).end());
 
-    moveContact.c1.localPose.linear() = moveContactConstraint->A_localpos().linear();
-    cnoid::Matrix3d B_rot = cnoid::Matrix3d::Identity();
-    if (moveContactConstraint->B_link()) B_rot = moveContactConstraint->B_link()->R();
-    cnoid::Matrix3d A_rot;
-    if (moveContactConstraint->A_link()) A_rot = moveContactConstraint->A_link()->R() * moveContactConstraint->A_localpos().linear();
-    else A_rot = moveContactConstraint->A_localpos().linear();
-    moveContact.c2.localPose.linear() = (B_rot.transpose() * A_rot) * cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
+    if (solved) {
+      moveContact.c1.localPose.linear() = moveContactConstraint->A_localpos().linear();
+      cnoid::Matrix3d B_rot = cnoid::Matrix3d::Identity();
+      if (moveContactConstraint->B_link()) B_rot = moveContactConstraint->B_link()->R();
+      cnoid::Matrix3d A_rot;
+      if (moveContactConstraint->A_link()) A_rot = moveContactConstraint->A_link()->R() * moveContactConstraint->A_localpos().linear();
+      else A_rot = moveContactConstraint->A_localpos().linear();
+      moveContact.c2.localPose.linear() = (B_rot.transpose() * A_rot) * cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
+    }
 
     return solved;
 

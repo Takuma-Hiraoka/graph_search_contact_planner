@@ -23,17 +23,17 @@ namespace graph_search_contact_planner_sample{
     // {
     //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
     //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
-    // }
+    // } // 10s
     {
       goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor2")));
       goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor2")));
       goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2")));
       goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2")));
-    }
+    } // 2m
     
     planner.param.goalContactState = goalContactState;
-    planner.debugLevel() = 0;
-    planner.threads() = 10;
+    planner.debugLevel() = 1;
+    planner.threads() = 25;
 
     viewer->objects(obstacle);
 

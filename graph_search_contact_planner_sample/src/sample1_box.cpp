@@ -34,7 +34,7 @@ namespace graph_search_contact_planner_sample{
     }
     planner.param.goalContactState = goalContactState;
     planner.debugLevel() = 1;
-    planner.threads() = 20;
+    planner.threads() = 25;
     planner.maxExtendNum() = 1e6;
     // planner.param.pikParam.debugLevel = 3;
     // planner.param.pikParam.viewMilliseconds = -1;

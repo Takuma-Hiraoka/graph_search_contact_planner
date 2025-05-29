@@ -13,7 +13,6 @@ namespace graph_search_contact_planner_sample{
     param.bodies.push_back(box);
     param.variables.push_back(box->rootLink());
     box->rootLink()->setName("box");
-    box->rootLink()->setMass(1.0);
     box->rootLink()->p() = cnoid::Vector3(0.6,0,1.0);
     box->rootLink()->R() = cnoid::rotFromRpy(0.0, 0.0, M_PI/2);
     box->calcForwardKinematics();
