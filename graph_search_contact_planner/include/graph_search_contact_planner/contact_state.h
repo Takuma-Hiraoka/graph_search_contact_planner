@@ -28,8 +28,8 @@ namespace graph_search_contact_planner{
       if (a.contacts.size() != b.contacts.size()) return false; // 数が違う
       for (int i=0;i<a.contacts.size();i++) {
 	if (!(a.contacts[i] == b.contacts[i])) return false; // 名前が違う
-	if (!(a.contacts[i].c1.name == b.contacts[i].c1.name) && (a.contacts[i].c1.localPose.translation() == b.contacts[i].c1.localPose.translation()) ||
-	    (a.contacts[i].c1.name == b.contacts[i].c2.name) && (a.contacts[i].c1.localPose.translation() == b.contacts[i].c2.localPose.translation())) return false; // translationが違う
+	if (!((a.contacts[i].c1.name == b.contacts[i].c1.name) && (a.contacts[i].c1.localPose.translation() == b.contacts[i].c1.localPose.translation()) && (a.contacts[i].c2.name == b.contacts[i].c2.name) && (a.contacts[i].c2.localPose.translation() == b.contacts[i].c2.localPose.translation())) ||
+	    ((a.contacts[i].c1.name == b.contacts[i].c2.name) && (a.contacts[i].c1.localPose.translation() == b.contacts[i].c2.localPose.translation()) && (a.contacts[i].c2.name == b.contacts[i].c1.name) && (a.contacts[i].c2.localPose.translation() == b.contacts[i].c1.localPose.translation()))) return false; // translationが違う
       }
       return true;
     }

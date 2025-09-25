@@ -97,7 +97,7 @@ namespace graph_search_contact_planner{
     node->heuristic() = unsatisfied_num;
   }
 
-  std::vector<std::shared_ptr<graph_search::Node> > ContactPlanner::gatherAdjacentNodes(std::shared_ptr<graph_search::Node> extend_node) {
+  std::vector<std::shared_ptr<graph_search::Node> > ContactPlanner::gatherAdjacentNodes(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) {
     ContactState extend_state = std::static_pointer_cast<ContactNode>(extend_node)->state();
     if (this->debugLevel() >= 2) {
       std::cerr << "extend_state" << std::endl;
@@ -116,6 +116,11 @@ namespace graph_search_contact_planner{
     }
 
     // 接触の追加.
+    std::set<cnoid::BodyPtr> bodies;
+    for(size_t i=0;i<std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->variables.size();i++){
+      if(std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->variables[i]->body()) bodies.insert(std::static_pointer_cast<ContactPlanner::ContactTransitionCheckParam>(checkParam)->variables[i]->body());
+    }
+
     // static contact
     for (int i=0; i<param.contactDynamicCandidates.size(); i++) {
       // staticCandidateと接触しているものを更にstaticCandidateと接触させることはしない
@@ -129,7 +134,15 @@ namespace graph_search_contact_planner{
       }
       if (skip) continue;
 
+      // ルートリンク位置からaddCandidateDistanceを超える距離のstaticCandidateと接触させることはしない
+      // 高速化のため. gikを使うまでもなく解けない
+      cnoid::Vector3 rootPos;
+      for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
+	if ((*it)->joint(param.contactDynamicCandidates[i]->name)) rootPos = (*it)->rootLink()->p();
+      }
       for (int j=0; j<param.contactStaticCandidates.size(); j++) {
+	if ((rootPos - param.contactStaticCandidates[j]->localPose.translation()).norm() > param.addCandidateDistance) continue;
+
 	std::shared_ptr<ContactNode> newNode = std::make_shared<ContactNode>();
 	newNode->parent() = extend_node;
 	newNode->state() = extend_state;
@@ -140,7 +153,19 @@ namespace graph_search_contact_planner{
 
     // dynamic contact
     for (int i=0; i<param.contactDynamicCandidates.size(); i++) {
+      // それぞれのルートリンク位置の距離がaddCandidateDistanceを超えるcontactDynamicCandidate同士を接触させることはしない
+      // 高速化のため. gikを使うまでもなく解けない
+      cnoid::Vector3 rootPos1;
+      for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
+	if ((*it)->joint(param.contactDynamicCandidates[i]->name)) rootPos1 = (*it)->rootLink()->p();
+      }
       for (int j=i+1; j<param.contactDynamicCandidates.size(); j++) {
+	cnoid::Vector3 rootPos2;
+	for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
+	  if ((*it)->joint(param.contactDynamicCandidates[j]->name)) rootPos2 = (*it)->rootLink()->p();
+	}
+	if ((rootPos1 - rootPos2).norm() > param.addCandidateDistance) continue;
+
 	std::shared_ptr<ContactNode> newNode = std::make_shared<ContactNode>();
 	newNode->parent() = extend_node;
 	newNode->state() = extend_state;

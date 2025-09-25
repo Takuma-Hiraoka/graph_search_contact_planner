@@ -30,7 +30,7 @@ namespace graph_search_contact_planner{
     void postCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
     bool checkTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) override;
     bool isGoalSatisfied(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) override; // nodeのcontactsがgoalContactStatesのcontactsを含んでいればtrue. nameのみで座標は無視.
-    std::vector<std::shared_ptr<graph_search::Node> > gatherAdjacentNodes(std::shared_ptr<graph_search::Node> extend_node) override;
+    std::vector<std::shared_ptr<graph_search::Node> > gatherAdjacentNodes(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
     void calcHeuristic(std::shared_ptr<graph_search::Node> node) override;
 
     bool checkTransitionImpl(const ContactState& preState,
@@ -70,6 +70,7 @@ namespace graph_search_contact_planner{
       global_inverse_kinematics_solver::GIKParam gikParam;
       std::shared_ptr<moveit_extensions::InterpolatedPropagationDistanceField> field;
       std::shared_ptr<choreonoid_viewer::Viewer> viewer = nullptr;
+      double addCandidateDistance = 2.0; // contactDynamicCandidateのルートリンクからこの距離を超えるものはgikを使うまでもなく解けないものとする
 
       GSCPParam() {
 	gikParam.maxTranslation = 2.0;
