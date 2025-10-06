@@ -227,7 +227,11 @@ namespace graph_search_contact_planner{
       }
       if (!solveContactIK(postState, moveContact, postState, IKState::DETACH_FIXED, variables, constraints, rejections, nominals, pikParam, gikParam)) return false;
     } else {
-      if (preState == postState) return true; // 同じ. はじめの接触.
+      if (preState == postState) {
+	// 同じ. はじめの接触.
+	postState.transition.push_back(preState.frame);
+	return true;
+      }
       std::cerr << "[GraphSearchContactPlanner] checkTransition failed!! postState.contacts.size() is same as preState.contacts.size()" << std::endl;
       return false;
     }
