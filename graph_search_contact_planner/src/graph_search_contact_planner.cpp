@@ -166,6 +166,13 @@ namespace graph_search_contact_planner{
 	}
 	if ((rootPos1 - rootPos2).norm() > param.addCandidateDistance) continue;
 
+	// 既に接触しているリンク同士を更に接触させることはしない
+	bool found = false;
+	for (int k=0; k<extend_state.contacts.size() && !found; k++) {
+	  if (extend_state.contacts[k] == Contact(*(param.contactDynamicCandidates[i]), *(param.contactDynamicCandidates[j]))) found = true;
+	}
+	if (found) continue;
+
 	std::shared_ptr<ContactNode> newNode = std::make_shared<ContactNode>();
 	newNode->parent() = extend_node;
 	newNode->state() = extend_state;
