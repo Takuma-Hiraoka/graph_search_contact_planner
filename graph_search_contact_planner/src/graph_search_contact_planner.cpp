@@ -152,31 +152,44 @@ namespace graph_search_contact_planner{
     }
 
     // dynamic contact
+    std::vector<std::shared_ptr<ContactCandidate> > contactDynamicCandidates;
     for (int i=0; i<param.contactDynamicCandidates.size(); i++) {
+      // 既に接触している接触候補は接触できない
+      bool in_contact = false;
+      for (int j=0; j<extend_state.contacts.size() && !in_contact; j++) {
+	if (((param.contactDynamicCandidates[i]->name == extend_state.contacts[j].c1.name) && (param.contactDynamicCandidates[i]->localPose.translation() == extend_state.contacts[j].c1.localPose.translation())) ||
+	    ((param.contactDynamicCandidates[i]->name == extend_state.contacts[j].c2.name) && (param.contactDynamicCandidates[i]->localPose.translation() == extend_state.contacts[j].c2.localPose.translation()))) in_contact = true;
+      }
+      if (!in_contact) contactDynamicCandidates.push_back(param.contactDynamicCandidates[i]);
+    }
+
+    for (int i=0; i<contactDynamicCandidates.size(); i++) {
       // それぞれのルートリンク位置の距離がaddCandidateDistanceを超えるcontactDynamicCandidate同士を接触させることはしない
       // 高速化のため. gikを使うまでもなく解けない
       cnoid::Vector3 rootPos1;
       for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-	if ((*it)->joint(param.contactDynamicCandidates[i]->name)) rootPos1 = (*it)->rootLink()->p();
+	if ((*it)->joint(contactDynamicCandidates[i]->name)) rootPos1 = (*it)->rootLink()->p();
       }
-      for (int j=i+1; j<param.contactDynamicCandidates.size(); j++) {
+      for (int j=i+1; j<contactDynamicCandidates.size(); j++) {
+	// 同じリンク内の候補同士は接触できない
+	if (contactDynamicCandidates[i]->name == contactDynamicCandidates[j]->name) continue;
 	cnoid::Vector3 rootPos2;
 	for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-	  if ((*it)->joint(param.contactDynamicCandidates[j]->name)) rootPos2 = (*it)->rootLink()->p();
+	  if ((*it)->joint(contactDynamicCandidates[j]->name)) rootPos2 = (*it)->rootLink()->p();
 	}
 	if ((rootPos1 - rootPos2).norm() > param.addCandidateDistance) continue;
 
-	// 既に接触しているリンク同士を更に接触させることはしない
+	// localPoseが違ったとしても既に接触しているリンク同士を更に接触させることはしない
 	bool found = false;
 	for (int k=0; k<extend_state.contacts.size() && !found; k++) {
-	  if (extend_state.contacts[k] == Contact(*(param.contactDynamicCandidates[i]), *(param.contactDynamicCandidates[j]))) found = true;
+	  if (extend_state.contacts[k] == Contact(*(contactDynamicCandidates[i]), *(contactDynamicCandidates[j]))) found = true;
 	}
 	if (found) continue;
 
 	std::shared_ptr<ContactNode> newNode = std::make_shared<ContactNode>();
 	newNode->parent() = extend_node;
 	newNode->state() = extend_state;
-	newNode->state().contacts.push_back(Contact(*(param.contactDynamicCandidates[i]), *(param.contactDynamicCandidates[j])));
+	newNode->state().contacts.push_back(Contact(*(contactDynamicCandidates[i]), *(contactDynamicCandidates[j])));
 	adjacentNodes.push_back(newNode);
       }
     }

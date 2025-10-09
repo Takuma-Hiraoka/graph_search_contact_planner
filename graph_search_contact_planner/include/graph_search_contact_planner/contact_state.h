@@ -30,8 +30,8 @@ namespace graph_search_contact_planner{
 	bool has_a = false;
 	for (int j=0;(j<b.contacts.size()) && !has_a; j++) {
 	  if (!(a.contacts[i] == b.contacts[j])) continue; // 名前が違う
-	  if (!((a.contacts[i].c1.name == b.contacts[j].c1.name) && (a.contacts[i].c1.localPose.translation() == b.contacts[j].c1.localPose.translation()) && (a.contacts[i].c2.name == b.contacts[j].c2.name) && (a.contacts[i].c2.localPose.translation() == b.contacts[j].c2.localPose.translation())) ||
-	      ((a.contacts[i].c1.name == b.contacts[j].c2.name) && (a.contacts[i].c1.localPose.translation() == b.contacts[j].c2.localPose.translation()) && (a.contacts[i].c2.name == b.contacts[j].c1.name) && (a.contacts[i].c2.localPose.translation() == b.contacts[j].c1.localPose.translation()))) continue; // translationが違う
+	  if (!((a.contacts[i].c1.name == b.contacts[j].c1.name) && (a.contacts[i].c1.localPose.translation() == b.contacts[j].c1.localPose.translation()) && (a.contacts[i].c2.name == b.contacts[j].c2.name) && (a.contacts[i].c2.localPose.translation() == b.contacts[j].c2.localPose.translation()) ||
+		((a.contacts[i].c1.name == b.contacts[j].c2.name) && (a.contacts[i].c1.localPose.translation() == b.contacts[j].c2.localPose.translation()) && (a.contacts[i].c2.name == b.contacts[j].c1.name) && (a.contacts[i].c2.localPose.translation() == b.contacts[j].c1.localPose.translation())))) continue; // translationが違う
 	  has_a = true;
 	}
 	if (!has_a) return false;
