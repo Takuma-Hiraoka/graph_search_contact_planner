@@ -12,6 +12,7 @@ namespace graph_search_contact_planner_sample{
     cnoid::BodyPtr box = bodyLoader.load(ros::package::getPath("eusurdfwrl") + "/models/maxvalu-supermarket-basket/maxvalu-supermarket-basket.wrl");
     param.bodies.push_back(box);
     param.variables.push_back(box->rootLink());
+    box->setName("box");
     box->rootLink()->setName("box");
     box->rootLink()->p() = cnoid::Vector3(0.6,0,1.0);
     box->rootLink()->R() = cnoid::rotFromRpy(0.0, 0.0, M_PI/2);
@@ -22,12 +23,14 @@ namespace graph_search_contact_planner_sample{
     // currentContactState
     {
       graph_search_contact_planner::ContactCandidate c1;
-      c1.name = "box";
+      c1.bodyName = box->name();
+      c1.linkName = "box";
       c1.isStatic = false;
       c1.localPose.translation() = cnoid::Vector3(0, 0, 0.0);
       c1.localPose.linear() = cnoid::rotFromRpy(0.0, 0.0, -M_PI/2);
       graph_search_contact_planner::ContactCandidate c2;
-      c2.name = "table1";
+      c2.bodyName = "table1";
+      c2.linkName = "table1";
       c2.isStatic = true;
       c2.localPose.translation() = cnoid::Vector3(0.6, 0.0, 1.0);
       c2.localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
@@ -39,7 +42,8 @@ namespace graph_search_contact_planner_sample{
       // base
       {
         std::shared_ptr<graph_search_contact_planner::ContactCandidate> base = std::make_shared<graph_search_contact_planner::ContactCandidate>();
-        base->name = "box";
+        base->bodyName = box->name();
+        base->linkName = "box";
         base->isStatic = false;
         base->localPose.translation() = cnoid::Vector3(0,0,0.0);
         base->localPose.linear() = cnoid::rotFromRpy(0.0, 0.0, -M_PI/2);
@@ -48,7 +52,8 @@ namespace graph_search_contact_planner_sample{
       // rhandle
       {
         std::shared_ptr<graph_search_contact_planner::ContactCandidate> rhandle = std::make_shared<graph_search_contact_planner::ContactCandidate>();
-        rhandle->name = "box";
+        rhandle->bodyName = box->name();
+        rhandle->linkName = "box";
         rhandle->isStatic = false;
         rhandle->localPose.translation() = cnoid::Vector3(0.15,0.0,0.1);
         rhandle->localPose.linear() = cnoid::rotFromRpy(0.0, -M_PI/2, 0.0);
@@ -57,7 +62,8 @@ namespace graph_search_contact_planner_sample{
       // lhandle
       {
         std::shared_ptr<graph_search_contact_planner::ContactCandidate> lhandle = std::make_shared<graph_search_contact_planner::ContactCandidate>();
-        lhandle->name = "box";
+        lhandle->bodyName = box->name();
+        lhandle->linkName = "box";
         lhandle->isStatic = false;
         lhandle->localPose.translation() = cnoid::Vector3(-0.15,0.0,0.1);
         lhandle->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI/2, 0.0);

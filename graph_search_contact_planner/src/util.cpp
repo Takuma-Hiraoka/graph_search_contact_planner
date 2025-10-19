@@ -27,24 +27,24 @@ namespace graph_search_contact_planner{
       bool skip=false;
       if (typeid(*(param.constraints[i]))==typeid(ik_constraint2_distance_field::DistanceFieldCollisionConstraint)) {
         for (int j=0; j<preState.contacts.size() && !skip; j++) {
-          if (((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && preState.contacts[j].c2.isStatic) ||
-              ((preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && preState.contacts[j].c1.isStatic)) skip = true;
+          if (((preState.contacts[j].c1.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->body()->name()) && (preState.contacts[j].c1.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && preState.contacts[j].c2.isStatic) ||
+              ((preState.contacts[j].c2.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->body()->name()) && (preState.contacts[j].c2.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && preState.contacts[j].c1.isStatic)) skip = true;
         }
         if (!skip && ((ikState==IKState::ATTACH_FIXED) ||
                       (ikState==IKState::DETACH_FIXED))) {
-          if ((moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) ||
-              (moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) skip = true;
+          if (((moveContact.c1.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->body()->name()) && (moveContact.c1.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name())) ||
+              ((moveContact.c2.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->body()->name()) && (moveContact.c2.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()))) skip = true;
         }
       }
       if (typeid(*(param.constraints[i]))==typeid(ik_constraint2_bullet::BulletCollisionConstraint)) {
         for (int j=0; j<preState.contacts.size() && !skip; j++) {
-          if (((preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name())) ||
-              ((preState.contacts[j].c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (preState.contacts[j].c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name()))) skip = true;
+          if (((preState.contacts[j].c1.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->body()->name()) && (preState.contacts[j].c1.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (preState.contacts[j].c2.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->body()->name()) && (preState.contacts[j].c2.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name())) ||
+              ((preState.contacts[j].c1.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->body()->name()) && (preState.contacts[j].c1.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name()) && (preState.contacts[j].c2.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->body()->name()) && (preState.contacts[j].c2.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()))) skip = true;
         }
         if (!skip && ((ikState==IKState::ATTACH_FIXED) ||
                       (ikState==IKState::DETACH_FIXED))) {
-          if (((moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name())) ||
-              ((moveContact.c2.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (moveContact.c1.name == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name()))) skip = true;
+          if (((moveContact.c1.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->body()->name()) && (moveContact.c1.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (moveContact.c2.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->body()->name()) && (moveContact.c2.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name())) ||
+              ((moveContact.c2.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->body()->name()) && (moveContact.c2.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->A_link()->name()) && (moveContact.c1.bodyName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->body()->name()) && (moveContact.c1.linkName == std::static_pointer_cast<ik_constraint2::CollisionConstraint>(param.constraints[i])->B_link()->name()))) skip = true;
         }
       }
       if (!skip) constraints0.push_back(constraints[i]);
@@ -63,23 +63,25 @@ namespace graph_search_contact_planner{
         if (preState.contacts[i].c1.isStatic) { constraint->A_link() = nullptr; }
         else {
           for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-            if ((*it)->joint(preState.contacts[i].c1.name)) {
-              constraint->A_link() = (*it)->joint(preState.contacts[i].c1.name);
+            if ((*it)->name() != preState.contacts[i].c1.bodyName) continue;
+            if ((*it)->joint(preState.contacts[i].c1.linkName)) {
+              constraint->A_link() = (*it)->joint(preState.contacts[i].c1.linkName);
               break;
             }
           }
-          if (!constraint->A_link()) std::cerr << "[GraphSearchContactPlanner] error!! bodies do not have preState.contacts[i].c1.name" << std::endl;
+          if (!constraint->A_link()) std::cerr << "[GraphSearchContactPlanner] error!! bodies do not have preState.contacts[i].c1.linkName" << std::endl;
         }
         constraint->A_localpos() = preState.contacts[i].c1.localPose;
         if (preState.contacts[i].c2.isStatic) { constraint->B_link() = nullptr; }
         else {
           for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-            if ((*it)->joint(preState.contacts[i].c2.name)) {
-              constraint->B_link() = (*it)->joint(preState.contacts[i].c2.name);
+            if ((*it)->name() != preState.contacts[i].c2.bodyName) continue;
+            if ((*it)->joint(preState.contacts[i].c2.linkName)) {
+              constraint->B_link() = (*it)->joint(preState.contacts[i].c2.linkName);
               break;
             }
           }
-          if (!constraint->B_link()) std::cerr << "[GraphSearchContactPlanner] error!! bodies do not have preState.contacts[i].c2.name" << std::endl;
+          if (!constraint->B_link()) std::cerr << "[GraphSearchContactPlanner] error!! bodies do not have preState.contacts[i].c2.linkName" << std::endl;
         }
         constraint->B_localpos() = preState.contacts[i].c2.localPose;
         constraint->B_localpos().linear() = constraint->B_localpos().linear() * cnoid::rotFromRpy(0.0, M_PI, M_PI/2).transpose(); // scfrを作る関係上localposのZはrobotの内側を向いている. PositionConstraintで一致させるためにZの向きを揃える.
@@ -105,14 +107,14 @@ namespace graph_search_contact_planner{
         for (int j=0;j<scfrConstraints.size();j++) {
           // Linkの位置から出す場合、位置固定でも数値誤差によって姿勢が少しずつずれていき、scfr計算の線型計画法に不具合が生じてscfrの領域が潰れる.
           // これを避けるため、staticのときは環境側の接触情報を使う. dynamicのときはbodyごとに2つ以上の接触がありscfrが残ると期待.
-          if (scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name)) {
+          if ((scfrConstraints[j]->A_robot()->name() == preState.contacts[i].c1.bodyName) && scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.linkName)) {
             if (preState.contacts[i].c2.isStatic) {
               scfrConstraints[j]->links().push_back(nullptr);
               cnoid::Isometry3 pose = preState.contacts[i].c2.localPose;
               pose.linear() *= cnoid::rotFromRpy(0.0, M_PI, M_PI/2).transpose();
               scfrConstraints[j]->poses().push_back(pose);
             } else {
-              scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.name));
+              scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c1.linkName));
               scfrConstraints[j]->poses().push_back(preState.contacts[i].c1.localPose);
             }
             scfrConstraints[j]->As().emplace_back(0,6);
@@ -121,14 +123,14 @@ namespace graph_search_contact_planner{
             scfrConstraints[j]->dls().push_back(dl);
             scfrConstraints[j]->dus().push_back(du);
           }
-          if (scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name)) {
+          if ((scfrConstraints[j]->A_robot()->name() == preState.contacts[i].c2.bodyName) && scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.linkName)) {
             if (preState.contacts[i].c1.isStatic) {
               scfrConstraints[j]->links().push_back(nullptr);
               cnoid::Isometry3 pose = preState.contacts[i].c1.localPose;
               pose.linear() *= cnoid::rotFromRpy(0.0, M_PI, M_PI/2).transpose();
               scfrConstraints[j]->poses().push_back(pose);
             } else {
-              scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.name));
+              scfrConstraints[j]->links().push_back(scfrConstraints[j]->A_robot()->joint(preState.contacts[i].c2.linkName));
               scfrConstraints[j]->poses().push_back(preState.contacts[i].c2.localPose);
             }
             scfrConstraints[j]->As().emplace_back(0,6);
@@ -145,23 +147,25 @@ namespace graph_search_contact_planner{
     if (moveContact.c1.isStatic) { moveContactConstraint->A_link() = nullptr; }
     else {
       for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-        if ((*it)->joint(moveContact.c1.name)) {
-          moveContactConstraint->A_link() = (*it)->joint(moveContact.c1.name);
+        if ((*it)->name() != moveContact.c1.bodyName) continue;
+        if ((*it)->joint(moveContact.c1.linkName)) {
+          moveContactConstraint->A_link() = (*it)->joint(moveContact.c1.linkName);
           break;
         }
       }
-      if (!moveContactConstraint->A_link()) std::cerr << "[GraphSearchContactPlanner] error!! bodies do not have postState.contacts[i].c1.name" << std::endl;
+      if (!moveContactConstraint->A_link()) std::cerr << "[GraphSearchContactPlanner] error!! bodies do not have postState.contacts[i].c1.linkName" << std::endl;
     }
     moveContactConstraint->A_localpos() = moveContact.c1.localPose;
     if (moveContact.c2.isStatic) { moveContactConstraint->B_link() = nullptr; }
     else {
       for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-        if ((*it)->joint(moveContact.c2.name)) {
-          moveContactConstraint->B_link() = (*it)->joint(moveContact.c2.name);
+        if ((*it)->name() != moveContact.c2.bodyName) continue;
+        if ((*it)->joint(moveContact.c2.linkName)) {
+          moveContactConstraint->B_link() = (*it)->joint(moveContact.c2.linkName);
           break;
         }
       }
-      if (!moveContactConstraint->B_link()) std::cerr << "[GraphSearchContactPlanner] error!! bodies do not have postState.contacts[i].c2.name" << std::endl;
+      if (!moveContactConstraint->B_link()) std::cerr << "[GraphSearchContactPlanner] error!! bodies do not have postState.contacts[i].c2.linkName" << std::endl;
     }
     moveContactConstraint->B_localpos() = moveContact.c2.localPose;
     moveContactConstraint->B_localpos().linear() = moveContactConstraint->B_localpos().linear() * cnoid::rotFromRpy(0.0, M_PI, M_PI/2).transpose(); // scfrを作る関係上localposのZはrobotの内側を向いている. PositionConstraintで一致させるために回転だけ逆にする.
@@ -226,12 +230,7 @@ namespace graph_search_contact_planner{
     return solved;
 
   }
-  std::vector<cnoid::SgNodePtr> generateCandidateMakers(const std::vector<cnoid::LinkPtr>& variables, const std::vector<std::shared_ptr<ContactCandidate> >& ccs) {
-    std::set<cnoid::BodyPtr> bodies;
-    for(size_t i=0;i<variables.size();i++){
-      if(variables[i]->body()) bodies.insert(variables[i]->body());
-    }
-
+  std::vector<cnoid::SgNodePtr> generateCandidateMakers(const std::vector<cnoid::BodyPtr>& bodies, const std::vector<std::shared_ptr<ContactCandidate> >& ccs) {
     std::vector<cnoid::SgNodePtr> drawOnObjects;
     for(int i=0;i<ccs.size();i++) {
       cnoid::SgLineSetPtr lines = new cnoid::SgLineSet;
@@ -248,9 +247,10 @@ namespace graph_search_contact_planner{
       cnoid::Isometry3 pose;
       if(ccs[i]->isStatic) pose = ccs[i]->localPose;
       else {
-        for (std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) {
-          if((*it)->joint(ccs[i]->name)) {
-            pose = (*it)->joint(ccs[i]->name)->T() * ccs[i]->localPose;
+        for (int j=0; j<bodies.size(); j++) {
+          if (bodies[j]->name() != ccs[i]->bodyName) continue;
+          if(bodies[j]->joint(ccs[i]->linkName)) {
+            pose = bodies[j]->joint(ccs[i]->linkName)->T() * ccs[i]->localPose;
           }
         }
       }

@@ -64,7 +64,7 @@ namespace graph_search_contact_planner{
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > nominals;
       std::shared_ptr<ContactState> currentContactState;
       std::shared_ptr<ContactState> goalContactState;
-      std::vector<std::shared_ptr<ContactCandidate> > contactDynamicCandidates; // 
+      std::vector<std::shared_ptr<ContactCandidate> > contactDynamicCandidates;
       std::vector<std::shared_ptr<ContactCandidate> > contactStaticCandidates; // staticCondidate同士の接触は起こりえない
       prioritized_inverse_kinematics_solver2::IKParam pikParam;
       global_inverse_kinematics_solver::GIKParam gikParam;

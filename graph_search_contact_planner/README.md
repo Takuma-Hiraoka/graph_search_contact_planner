@@ -1,0 +1,4 @@
+## graph_search_contact_planner
+各Body及びLinkには名前がついている必要がある．
+
+特にchoreonoidのBodyLoaderではBodyに名前がつかないので、setNameする必要がある．

@@ -59,19 +59,19 @@ namespace graph_search_contact_planner_sample{
     {
       for(int i=0; i<5; i++) {
         for(int j=0; j<5; j++) {
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor1");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor1", "floor1");
           cc1->localPose.translation() = cnoid::Vector3(0.2+0.2*i, 0.1+0.2*j, 0.0);
           cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc1);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor", "floor");
           cc2->localPose.translation() = cnoid::Vector3(-0.2*i, 0.1+0.2*j, 0.0);
           cc2->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc2);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor1");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor1", "floor1");
           cc3->localPose.translation() = cnoid::Vector3(0.2+0.2*i, -0.1-0.2*j, 0.0);
           cc3->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc3);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor", "floor");
           cc4->localPose.translation() = cnoid::Vector3(-0.2*i, -0.1-0.2*j, 0.0);
           cc4->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc4);
@@ -80,19 +80,19 @@ namespace graph_search_contact_planner_sample{
 
       for(int i=0; i<2; i++) {
         for(int j=0; j<2; j++) {
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2", "floor2");
           cc1->localPose.translation() = cnoid::Vector3(1.6+0.2*i, 0.1+0.2*j, 0.3);
           cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc1);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2", "floor2");
           cc2->localPose.translation() = cnoid::Vector3(1.6-0.2-0.2*i, 0.1+0.2*j, 0.3);
           cc2->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc2);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2", "floor2");
           cc3->localPose.translation() = cnoid::Vector3(1.6+0.2*i, -0.1-0.2*j, 0.3);
           cc3->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc3);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor2", "floor2");
           cc4->localPose.translation() = cnoid::Vector3(1.6-0.2-0.2*i, -0.1-0.2*j, 0.3);
           cc4->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc4);
@@ -197,19 +197,19 @@ namespace graph_search_contact_planner_sample{
     {
       for(int i=0; i<5; i++) {
         for(int j=0; j<5; j++) {
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor", "floor");
           cc1->localPose.translation() = cnoid::Vector3(0.2+0.2*i, 0.1+0.2*j, 0.0);
           cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc1);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc2 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor", "floor");
           cc2->localPose.translation() = cnoid::Vector3(-0.2*i, 0.1+0.2*j, 0.0);
           cc2->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc2);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc3 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor", "floor");
           cc3->localPose.translation() = cnoid::Vector3(0.2+0.2*i, -0.1-0.2*j, 0.0);
           cc3->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc3);
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc4 = std::make_shared<graph_search_contact_planner::ContactCandidate>("floor", "floor");
           cc4->localPose.translation() = cnoid::Vector3(-0.2*i, -0.1-0.2*j, 0.0);
           cc4->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc4);
@@ -217,7 +217,7 @@ namespace graph_search_contact_planner_sample{
       }
       for(int i=0; i<3; i++) {
         for(int j=0; j<3; j++) {
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("table1");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("table1", "table1");
           cc1->localPose.translation() = cnoid::Vector3(0.6-0.2+0.2*i, -0.2+0.2*j, 1.0);
           cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc1);
@@ -225,7 +225,7 @@ namespace graph_search_contact_planner_sample{
       }
       for(int i=0; i<3; i++) {
         for(int j=0; j<3; j++) {
-          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("table2");
+          std::shared_ptr<graph_search_contact_planner::ContactCandidate> cc1 = std::make_shared<graph_search_contact_planner::ContactCandidate>("table2", "table2");
           cc1->localPose.translation() = cnoid::Vector3(-0.2+0.2*i, 0.6-0.2+0.2*j, 1.0);
           cc1->localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
           param.contactStaticCandidates.push_back(cc1);

@@ -21,14 +21,14 @@ namespace graph_search_contact_planner_sample{
 
     std::shared_ptr<graph_search_contact_planner::ContactState> goalContactState = std::make_shared<graph_search_contact_planner::ContactState>();
     // {
-    //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
-    //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1")));
+    //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("JAXON_JVRC", "RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1", "floor1")));
+    //   goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("JAXON_JVRC", "LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor1", "floor1")));
     // } // 10s
     {
-      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor2")));
-      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor2")));
-      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("RLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2")));
-      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("LLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("JAXON_JVRC", "RARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor2", "floor2")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("JAXON_JVRC", "LARM_JOINT7"), graph_search_contact_planner::ContactCandidate("floor2", "floor2")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("JAXON_JVRC", "RLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2", "floor2")));
+      goalContactState->contacts.push_back(graph_search_contact_planner::Contact(graph_search_contact_planner::ContactCandidate("JAXON_JVRC", "LLEG_JOINT5"), graph_search_contact_planner::ContactCandidate("floor2", "floor2")));
     } // 2m
 
     planner.param.goalContactState = goalContactState;
@@ -40,8 +40,10 @@ namespace graph_search_contact_planner_sample{
     for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) viewer->objects((*it));
 
     std::vector<cnoid::SgNodePtr> drawOnObjects;
-    std::vector<cnoid::SgNodePtr> csc = graph_search_contact_planner::generateCandidateMakers(planner.param.variables, planner.param.contactStaticCandidates);
-    std::vector<cnoid::SgNodePtr> cdc = graph_search_contact_planner::generateCandidateMakers(planner.param.variables, planner.param.contactDynamicCandidates);
+    std::vector<cnoid::BodyPtr> bodies_;
+    for(std::set<cnoid::BodyPtr>::iterator it=bodies.begin(); it != bodies.end(); it++) bodies_.push_back(*it);
+    std::vector<cnoid::SgNodePtr> csc = graph_search_contact_planner::generateCandidateMakers(bodies_, planner.param.contactStaticCandidates);
+    std::vector<cnoid::SgNodePtr> cdc = graph_search_contact_planner::generateCandidateMakers(bodies_, planner.param.contactDynamicCandidates);
     drawOnObjects.insert(drawOnObjects.end(), csc.begin(), csc.end());
     drawOnObjects.insert(drawOnObjects.end(), cdc.begin(), cdc.end());
 

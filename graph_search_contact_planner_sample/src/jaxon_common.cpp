@@ -11,6 +11,7 @@ namespace graph_search_contact_planner_sample{
     cnoid::BodyPtr robot = bodyLoader.load(ros::package::getPath("jvrc_models") + "/JAXON_JVRC/JAXON_JVRCmain.wrl");
     if(!robot) std::cerr << "!robot" << std::endl;
     param.bodies.push_back(robot);
+    robot->setName("JAXON_JVRC");
     // reset manip pose
     robot->rootLink()->p() = cnoid::Vector3(0,0,1.0);
     robot->rootLink()->v().setZero();
@@ -60,11 +61,13 @@ namespace graph_search_contact_planner_sample{
       // rleg
       {
         graph_search_contact_planner::ContactCandidate c1;
-        c1.name = "RLEG_JOINT5";
+        c1.bodyName = robot->name();
+        c1.linkName = "RLEG_JOINT5";
         c1.isStatic = false;
         c1.localPose.translation() = cnoid::Vector3(0, 0, -0.1);
         graph_search_contact_planner::ContactCandidate c2;
-        c2.name = "floor";
+        c2.bodyName = "floor";
+        c2.linkName = "floor";
         c2.isStatic = true;
         c2.localPose.translation() = cnoid::Vector3(0.0, -0.1, 0.0);
         c2.localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
@@ -73,11 +76,13 @@ namespace graph_search_contact_planner_sample{
       // lleg
       {
         graph_search_contact_planner::ContactCandidate c1;
-        c1.name = "LLEG_JOINT5";
+        c1.bodyName = robot->name();
+        c1.linkName = "LLEG_JOINT5";
         c1.isStatic = false;
         c1.localPose.translation() = cnoid::Vector3(0, 0, -0.1);
         graph_search_contact_planner::ContactCandidate c2;
-        c2.name = "floor";
+        c2.bodyName = "floor";
+        c2.linkName = "floor";
         c2.isStatic = true;
         c2.localPose.translation() = cnoid::Vector3(0.0, 0.1, 0.0);
         c2.localPose.linear() = cnoid::rotFromRpy(0.0, M_PI, M_PI/2);
@@ -90,7 +95,8 @@ namespace graph_search_contact_planner_sample{
       // rleg
       {
         std::shared_ptr<graph_search_contact_planner::ContactCandidate> rleg = std::make_shared<graph_search_contact_planner::ContactCandidate>();
-        rleg->name = "RLEG_JOINT5";
+        rleg->bodyName = robot->name();
+        rleg->linkName = "RLEG_JOINT5";
         rleg->isStatic = false;
         rleg->localPose.translation() = cnoid::Vector3(0,0,-0.11);
         param.contactDynamicCandidates.push_back(rleg);
@@ -98,7 +104,8 @@ namespace graph_search_contact_planner_sample{
       // lleg
       {
         std::shared_ptr<graph_search_contact_planner::ContactCandidate> lleg = std::make_shared<graph_search_contact_planner::ContactCandidate>();
-        lleg->name = "LLEG_JOINT5";
+        lleg->bodyName = robot->name();
+        lleg->linkName = "LLEG_JOINT5";
         lleg->isStatic = false;
         lleg->localPose.translation() = cnoid::Vector3(0,0,-0.11);
         param.contactDynamicCandidates.push_back(lleg);
@@ -106,7 +113,8 @@ namespace graph_search_contact_planner_sample{
       // rarm
       {
         std::shared_ptr<graph_search_contact_planner::ContactCandidate> rarm = std::make_shared<graph_search_contact_planner::ContactCandidate>();
-        rarm->name = "RARM_JOINT7";
+        rarm->bodyName = robot->name();
+        rarm->linkName = "RARM_JOINT7";
         rarm->isStatic = false;
         rarm->localPose.translation() = cnoid::Vector3(0,0,-0.22);
         param.contactDynamicCandidates.push_back(rarm);
@@ -114,7 +122,8 @@ namespace graph_search_contact_planner_sample{
       // larm
       {
         std::shared_ptr<graph_search_contact_planner::ContactCandidate> larm = std::make_shared<graph_search_contact_planner::ContactCandidate>();
-        larm->name = "LARM_JOINT7";
+        larm->bodyName = robot->name();
+        larm->linkName = "LARM_JOINT7";
         larm->isStatic = false;
         larm->localPose.translation() = cnoid::Vector3(0,0,-0.22);
         param.contactDynamicCandidates.push_back(larm);
