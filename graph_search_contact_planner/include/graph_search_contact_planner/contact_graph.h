@@ -34,25 +34,25 @@ namespace graph_search_contact_planner{
     void calcHeuristic(std::shared_ptr<graph_search::Node> node) override;
 
     bool checkTransitionImpl(const ContactState& preState,
-			     ContactState& postState,
-			     const std::vector<cnoid::LinkPtr>& variables,
-			     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& constraints,
-			     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
-			     const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
-			     const prioritized_inverse_kinematics_solver2::IKParam& pikParam,
-			     const global_inverse_kinematics_solver::GIKParam& gikParam
-			     ); // preStateからPostStateまでの遷移が可能ならtrue. trueのとき、postStateのframeやlocalPoseを書き換える.
+                             ContactState& postState,
+                             const std::vector<cnoid::LinkPtr>& variables,
+                             const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& constraints,
+                             const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+                             const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+                             const prioritized_inverse_kinematics_solver2::IKParam& pikParam,
+                             const global_inverse_kinematics_solver::GIKParam& gikParam
+                             ); // preStateからPostStateまでの遷移が可能ならtrue. trueのとき、postStateのframeやlocalPoseを書き換える.
     bool solveContactIK(const ContactState& preState,
-			Contact& moveContact,
-			ContactState& postState,
-			const IKState& ikState,
-			const std::vector<cnoid::LinkPtr>& variables,
-			const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& constraints,
-			const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
-			const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
-			prioritized_inverse_kinematics_solver2::IKParam pikParam,
-			global_inverse_kinematics_solver::GIKParam gikParam
-		        );
+                        Contact& moveContact,
+                        ContactState& postState,
+                        const IKState& ikState,
+                        const std::vector<cnoid::LinkPtr>& variables,
+                        const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& constraints,
+                        const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& rejections,
+                        const std::vector<std::shared_ptr<ik_constraint2::IKConstraint> >& nominals,
+                        prioritized_inverse_kinematics_solver2::IKParam pikParam,
+                        global_inverse_kinematics_solver::GIKParam gikParam
+                        );
     bool solve();
     void goalPath(std::vector<ContactState>& path);
     class GSCPParam {
@@ -73,26 +73,26 @@ namespace graph_search_contact_planner{
       double addCandidateDistance = 2.0; // contactDynamicCandidateのルートリンクからこの距離を超えるものはgikを使うまでもなく解けないものとする
 
       GSCPParam() {
-	gikParam.maxTranslation = 2.0;
-	gikParam.pikParam.maxIteration = 100; // max iterationに達するか、convergeしたら終了する. isSatisfiedでは終了しない. ゼロ空間でreference angleに可能な限り近づけるタスクがあるので. 1 iterationで0.5msくらいかかるので、stateを1つ作るための時間の上限が見積もれる. 一見、この値を小さくすると早くなりそうだが、goalSampling時に本当はgoalに到達できるのにその前に返ってしまうことで遅くなることがあるため、少ないiterationでも収束するように他のパラメータを調整したほうがいい
-	gikParam.pikParam.checkFinalState = true;
-	gikParam.pikParam.calcVelocity = false;
-	gikParam.delta = 0.1; // この距離内のstateは、中間のconstraintチェック無しで遷移可能. stateごとの距離がこの距離以内だとそもそも同じstateとみなされてあたらしくstateを作らない. 足を浮かせるとき等はstateが大きく変化しないので、deltaも小さくしておかないとstateが増えない.
-	gikParam.projectCellSize = 0.02;
-	gikParam.threads = 1;
-	gikParam.timeout = 1.0;
-	gikParam.goalBias = 0.2;
-	gikParam.pikParam.we = 1e2; // 逆運動学が振動しないこと優先. 1e0だと不安定. 1e3だと大きすぎる
-	gikParam.pikParam.wmax = 1e1; // 1e2程度にすると関節がめり込まなくなるが、ほとんど動かない.
-	gikParam.pikParam.convergeThre = 5e-3;
+        gikParam.maxTranslation = 2.0;
+        gikParam.pikParam.maxIteration = 100; // max iterationに達するか、convergeしたら終了する. isSatisfiedでは終了しない. ゼロ空間でreference angleに可能な限り近づけるタスクがあるので. 1 iterationで0.5msくらいかかるので、stateを1つ作るための時間の上限が見積もれる. 一見、この値を小さくすると早くなりそうだが、goalSampling時に本当はgoalに到達できるのにその前に返ってしまうことで遅くなることがあるため、少ないiterationでも収束するように他のパラメータを調整したほうがいい
+        gikParam.pikParam.checkFinalState = true;
+        gikParam.pikParam.calcVelocity = false;
+        gikParam.delta = 0.1; // この距離内のstateは、中間のconstraintチェック無しで遷移可能. stateごとの距離がこの距離以内だとそもそも同じstateとみなされてあたらしくstateを作らない. 足を浮かせるとき等はstateが大きく変化しないので、deltaも小さくしておかないとstateが増えない.
+        gikParam.projectCellSize = 0.02;
+        gikParam.threads = 1;
+        gikParam.timeout = 1.0;
+        gikParam.goalBias = 0.2;
+        gikParam.pikParam.we = 1e2; // 逆運動学が振動しないこと優先. 1e0だと不安定. 1e3だと大きすぎる
+        gikParam.pikParam.wmax = 1e1; // 1e2程度にすると関節がめり込まなくなるが、ほとんど動かない.
+        gikParam.pikParam.convergeThre = 5e-3;
 
-	pikParam.checkFinalState=true;
-	pikParam.calcVelocity = false;
-	pikParam.debugLevel = 0;
-	pikParam.we = 1e2;
-	pikParam.wmax = 1e1;
-	pikParam.convergeThre = 5e-3;
-	pikParam.maxIteration = 100;
+        pikParam.checkFinalState=true;
+        pikParam.calcVelocity = false;
+        pikParam.debugLevel = 0;
+        pikParam.we = 1e2;
+        pikParam.wmax = 1e1;
+        pikParam.convergeThre = 5e-3;
+        pikParam.maxIteration = 100;
       }
     };
     ContactPlanner() {}

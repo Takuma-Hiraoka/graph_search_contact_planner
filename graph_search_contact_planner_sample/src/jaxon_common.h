@@ -7,6 +7,6 @@
 
 namespace graph_search_contact_planner_sample{
   void generateJAXON(graph_search_contact_planner::ContactPlanner::GSCPParam& param
-		     );
+                     );
 }
 #endif

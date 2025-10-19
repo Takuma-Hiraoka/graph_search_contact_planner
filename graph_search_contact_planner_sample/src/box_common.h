@@ -6,6 +6,6 @@
 
 namespace graph_search_contact_planner_sample{
   void generateBOX(graph_search_contact_planner::ContactPlanner::GSCPParam& param
-		   );
+                   );
 }
 #endif

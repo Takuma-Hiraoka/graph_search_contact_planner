@@ -7,10 +7,10 @@
 
 namespace graph_search_contact_planner_sample{
   void generateStepWorld(cnoid::BodyPtr& obstacle,
-			 graph_search_contact_planner::ContactPlanner::GSCPParam& param
-			 );
+                         graph_search_contact_planner::ContactPlanner::GSCPParam& param
+                         );
   void generateTableWorld(cnoid::BodyPtr& obstacle,
-			  graph_search_contact_planner::ContactPlanner::GSCPParam& param
-			 );
+                          graph_search_contact_planner::ContactPlanner::GSCPParam& param
+                          );
 }
 #endif
