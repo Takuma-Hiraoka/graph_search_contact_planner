@@ -146,7 +146,8 @@ namespace graph_search_contact_planner{
         std::shared_ptr<ContactNode> newNode = std::make_shared<ContactNode>();
         newNode->parent() = extend_node;
         newNode->state() = extend_state;
-        newNode->state().contacts.push_back(Contact(*(param.contactDynamicCandidates[i]), *(param.contactStaticCandidates[j])));
+        Contact c = Contact(*(param.contactDynamicCandidates[i]), *(param.contactStaticCandidates[j]));
+        newNode->state().contacts.push_back(c);
         adjacentNodes.push_back(newNode);
       }
     }
@@ -189,7 +190,8 @@ namespace graph_search_contact_planner{
         std::shared_ptr<ContactNode> newNode = std::make_shared<ContactNode>();
         newNode->parent() = extend_node;
         newNode->state() = extend_state;
-        newNode->state().contacts.push_back(Contact(*(contactDynamicCandidates[i]), *(contactDynamicCandidates[j])));
+        Contact c = Contact(*(contactDynamicCandidates[i]), *(contactDynamicCandidates[j]));
+        newNode->state().contacts.push_back(c);
         adjacentNodes.push_back(newNode);
       }
     }
