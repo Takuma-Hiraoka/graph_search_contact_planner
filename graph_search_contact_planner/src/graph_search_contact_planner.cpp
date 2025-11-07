@@ -82,7 +82,7 @@ namespace graph_search_contact_planner{
     return true;
   }
 
-  void ContactPlanner::calcHeuristic(std::shared_ptr<graph_search::Node> node) {
+  void ContactPlanner::calcHeuristic(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> node) {
     // goalContactStateのcontactsのうち満たしていないもの
     // TODO 追加する
     ContactState state = std::static_pointer_cast<ContactNode>(node)->state();
