@@ -59,6 +59,7 @@ namespace graph_search_contact_planner{
 
     {
       for (int i=0; i<preState.contacts.size(); i++) {
+        if (preState.contacts[i] == moveContact) continue;
         std::shared_ptr<ik_constraint2::PositionConstraint> constraint = std::make_shared<ik_constraint2::PositionConstraint>();
         if (preState.contacts[i].c1.isStatic) { constraint->A_link() = nullptr; }
         else {
