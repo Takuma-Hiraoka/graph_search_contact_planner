@@ -22,16 +22,21 @@ namespace graph_search_contact_planner{
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > constraints;
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > rejections;
       std::vector<std::shared_ptr<ik_constraint2::IKConstraint> > nominals;
+      std::vector<std::shared_ptr<ContactCandidate> > contactDynamicCandidates;
+      std::vector<std::shared_ptr<ContactCandidate> > contactStaticCandidates;
       prioritized_inverse_kinematics_solver2::IKParam pikParam;
       global_inverse_kinematics_solver::GIKParam gikParam;
+      int debugLevel = 0;
+      double addCandidateDistance = 2.0;
     };
     std::shared_ptr<graph_search::Planner::TransitionCheckParam> generateCheckParam() override;
     void preCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
     void postCheckTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
     bool checkTransition(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) override;
     bool isGoalSatisfied(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) override; // nodeのcontactsがgoalContactStatesのcontactsを含んでいればtrue. nameのみで座標は無視.
-    std::vector<std::shared_ptr<graph_search::Node> > gatherAdjacentNodes(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> extend_node) override;
+    std::vector<std::shared_ptr<graph_search::Node> > gatherAdjacentNodes(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam) override;
     void calcHeuristic(std::shared_ptr<graph_search::Planner::TransitionCheckParam> checkParam, std::shared_ptr<graph_search::Node> node) override;
+    void addNodes2Graph(std::vector<std::shared_ptr<graph_search::Node> >& nodes) override;
 
     bool checkTransitionImpl(const ContactState& preState,
                              ContactState& postState,
