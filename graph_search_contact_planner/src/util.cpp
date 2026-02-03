@@ -173,8 +173,7 @@ namespace graph_search_contact_planner{
 
     if ((ikState==IKState::DETACH_FIXED) ||
         (ikState==IKState::ATTACH_PRE)) {
-      if (moveContactConstraint->B_link()) moveContactConstraint->B_localpos().translation() += moveContactConstraint->B_link()->R() * moveContactConstraint->B_localpos().linear() * cnoid::Vector3(0,0,0.02);
-      else moveContactConstraint->B_localpos().translation() += moveContactConstraint->B_localpos().linear() * cnoid::Vector3(0,0,0.02);
+      moveContactConstraint->B_localpos().translation() += moveContactConstraint->B_localpos().linear() * cnoid::Vector3(0,0,0.02);
     }
     moveContactConstraint->eval_link() = moveContactConstraint->B_link();
     moveContactConstraint->eval_localR() = moveContactConstraint->B_localpos().linear();
